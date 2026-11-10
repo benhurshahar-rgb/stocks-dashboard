@@ -175,7 +175,8 @@ function render(){
   var withV=list.filter(function(a){return value(a,P)!=null;}), lead=withV[0], last=withV[withV.length-1];
   var beat=dep?list.filter(function(a){return a.type==="stock" && !a.index && value(a,P)!=null && value(a,P)>depV;}).length:0;
   var h='<div class="top"><div><h1>לאן היו מגיעים '+(S.amount>=1e6?(+(S.amount/1e6).toFixed(2))+' מיליון ₪':ils(S.amount))+'?</h1>';
-  h+='<div class="sub">'+ils(S.amount)+' בכל אפיק · נכון ל-'+fmtDate(S.asOf)+' · דולר/שקל '+(S.fx.now?S.fx.now.toFixed(3):"—")+'</div></div></div>';
+  h+='<div class="sub">'+ils(S.amount)+' בכל אפיק · נכון ל-'+fmtDate(S.asOf)+' · דולר/שקל '+(S.fx.now?S.fx.now.toFixed(3):"—")+'</div></div>'+
+    '<button class="btn '+(token?'ghost':'')+'" type="button" id="gotoGh">⚙️ '+(token?'מחובר ל-GitHub ✓':'חיבור ל-GitHub')+'</button></div>';
   h+=updCard();
   h+='<div class="tiles">';
   if(lead) h+=tile(lead.color,"🥇 מוביל ב"+LABEL[P],lead.name,value(lead,P));
@@ -278,6 +279,7 @@ function bind(){
   $("amt").onchange=function(){ var n=parseFloat(String(this.value).replace(/,/g,"")); if(n>0){ CFG.amount=n; saveConfig(); } else this.value=S.amount.toLocaleString("en-US"); };
   $("add").onclick=function(){ openModal(null); };
   $("refresh").onclick=refreshNow;
+  $("gotoGh").onclick=function(){ var d=$("ghp"); d.open=true; d.scrollIntoView({behavior:"smooth",block:"start"}); setTimeout(function(){ var t=$("tok"); if(t) t.focus({preventScroll:true}); },400); };
   document.querySelectorAll("[data-edit]").forEach(function(b){ b.onclick=function(){ openModal(cfgAsset(b.dataset.edit)); }; });
   document.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var a=cfgAsset(b.dataset.del); if(!a) return; delId=a.id; $("ctext").textContent="להסיר את "+a.name+" מההשוואה?"; $("confirm").classList.add("open"); $("cno").focus(); }; });
   $("f-type").onchange=function(){ setType(this.value); };
