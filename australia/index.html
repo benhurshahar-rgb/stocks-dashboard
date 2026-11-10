@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>טיול משפחתי לאוסטרליה</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#012169">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="אוסטרליה">
+<meta name="robots" content="noindex">
+<style>
+  body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#012169;color:#fff;font-family:system-ui,Arial,sans-serif;text-align:center;padding:24px;box-sizing:border-box}
+  img{width:120px;height:120px;border-radius:28px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+  h1{font-size:24px;margin:0}
+  a.btn,button{display:inline-block;background:#FFD93B;color:#1B1446;font-weight:700;font-size:18px;padding:14px 26px;border-radius:999px;border:0;text-decoration:none}
+  .steps{background:rgba(255,255,255,.1);border-radius:16px;padding:14px 18px;max-width:380px;text-align:right;line-height:1.7;font-size:15px}
+  .muted{opacity:.75;font-size:13px}
+</style>
+</head>
+<body>
+<img src="icon-512.png" alt="">
+<h1>טיול משפחתי לאוסטרליה 🦘</h1>
+<a class="btn" id="go" href="#">פתיחת האפליקציה</a>
+<button id="install" hidden>📲 התקנה בטלפון</button>
+<div class="steps" id="howto">
+  <b>להתקנה בטלפון (אנדרואיד, כרום):</b><br>
+  1. לוחצים על ⋮ בפינה של כרום<br>
+  2. בוחרים "התקנת אפליקציה" / "Install app"<br>
+  3. מאשרים – האייקון של הדגל יופיע במסך הבית, בלי חץ
+</div>
+<div class="muted">האפליקציה עצמה פרטית ונפתחת רק למי שהוזמן.</div>
+<script>
+  const APP = 'https://claude.ai/artifact/8yJ4sRX4uDfH7WmnzzqdLR';
+  document.getElementById('go').href = APP;
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  if (standalone || /[?&]app=1/.test(location.search)) {
+    document.getElementById('howto').hidden = true;
+    location.replace(APP);
+  }
+  let deferred = null;
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; const b = document.getElementById('install'); b.hidden = false;
+    b.onclick = async () => { deferred.prompt(); await deferred.userChoice; deferred = null; b.hidden = true; }; });
+</script>
+</body>
+</html>
