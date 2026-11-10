@@ -1,0 +1,84 @@
+{
+ "amount": 3700000,
+ "assets": [
+  {
+   "id": "googl",
+   "type": "stock",
+   "name": "גוגל (Alphabet)",
+   "ticker": "GOOGL",
+   "color": "#3b82f6"
+  },
+  {
+   "id": "msft",
+   "type": "stock",
+   "name": "מיקרוסופט",
+   "ticker": "MSFT",
+   "color": "#06b6d4"
+  },
+  {
+   "id": "aapl",
+   "type": "stock",
+   "name": "אפל",
+   "ticker": "AAPL",
+   "color": "#8b5cf6"
+  },
+  {
+   "id": "amzn",
+   "type": "stock",
+   "name": "אמזון",
+   "ticker": "AMZN",
+   "color": "#f97316"
+  },
+  {
+   "id": "nvda",
+   "type": "stock",
+   "name": "אנבידיה",
+   "ticker": "NVDA",
+   "color": "#eab308"
+  },
+  {
+   "id": "tsla",
+   "type": "stock",
+   "name": "טסלה",
+   "ticker": "TSLA",
+   "color": "#ec4899"
+  },
+  {
+   "id": "tsm",
+   "type": "stock",
+   "name": "TSMC (טייוואן סמיקונדקטור)",
+   "ticker": "TSM",
+   "color": "#0f766e"
+  },
+  {
+   "id": "meta",
+   "type": "stock",
+   "name": "מטה (Meta)",
+   "ticker": "META",
+   "color": "#6366f1"
+  },
+  {
+   "id": "spy",
+   "type": "stock",
+   "index": true,
+   "name": "S&P 500 (מדד, דרך SPY)",
+   "ticker": "SPY",
+   "color": "#a16207"
+  },
+  {
+   "id": "port",
+   "type": "portfolio",
+   "name": "תיק שווה משקל: כל המניות",
+   "ticker": "",
+   "color": "#84cc16"
+  },
+  {
+   "id": "dep1",
+   "type": "deposit",
+   "name": "פיקדון שקלי מובטח",
+   "ticker": "",
+   "color": "#64748b",
+   "rate": 4.65
+  }
+ ]
+}

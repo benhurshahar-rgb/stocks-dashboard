@@ -1,0 +1,40 @@
+name: עדכון מחירים
+
+on:
+  schedule:
+    # Every 30 minutes while the US market is open (13:30–21:00 UTC, Mon–Fri)
+    - cron: "5,35 13-20 * * 1-5"
+    # After the close (both summer and winter time)
+    - cron: "20 21 * * 1-5"
+    - cron: "20 22 * * 1-5"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: [config.json]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-prices
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet yfinance pandas
+      - run: python scripts/update.py
+      - name: Commit data.json
+        run: |
+          git config user.name "price-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase --quiet origin main || true
+          git add data.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "עדכון מחירים $(date -u +'%Y-%m-%d %H:%M') UTC"
+          git push
