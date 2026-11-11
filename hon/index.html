@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1e1b4b">
+<meta name="robots" content="noindex">
+<title>הון עצמי</title>
+<link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="הון עצמי">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#1e1b4b; --bg2:#312e81; --ink:#0f172a; --mut:#64748b;
+  --green1:#10b981; --green2:#0ea5e9;
+  --amber1:#f59e0b; --amber2:#f97316;
+  --vio1:#8b5cf6; --vio2:#d946ef;
+  --rose1:#f43f5e; --rose2:#fb7185;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:Rubik,system-ui,sans-serif; color:#fff; -webkit-font-smoothing:antialiased;
+  background:radial-gradient(1200px 600px at 100% -10%,#7c3aed55,transparent 60%),
+             radial-gradient(900px 500px at -10% 110%,#0ea5e955,transparent 60%),
+             linear-gradient(160deg,var(--bg1),var(--bg2) 55%,#4c1d95);
+  background-attachment:fixed;
+}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:980px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 22px) 18px 40px}
+[hidden]{display:none!important}
+
+/* ---------- lock ---------- */
+#lock{min-height:100vh;display:grid;place-items:center;padding:24px}
+.lockcard{width:100%;max-width:380px;background:#ffffff14;border:1px solid #ffffff2a;border-radius:28px;padding:34px 26px;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 30px 80px #0006;text-align:center}
+.logo{width:76px;height:76px;border-radius:24px;margin:0 auto 16px;display:grid;place-items:center;
+  background:conic-gradient(from 200deg,var(--green1),var(--green2),var(--vio1),var(--vio2),var(--amber1),var(--green1));box-shadow:0 12px 30px #0005}
+.logo svg{width:40px;height:40px}
+.lockcard h1{margin:0 0 4px;font-size:28px;font-weight:800}
+.lockcard p{margin:0 0 22px;color:#c7d2fe;font-size:15px}
+.pw{width:100%;padding:15px 16px;border-radius:16px;border:1px solid #ffffff33;background:#ffffff1a;color:#fff;font:inherit;font-size:17px;text-align:center;outline:none}
+.pw:focus{border-color:#a5b4fc;background:#ffffff26}
+.pw::placeholder{color:#a5b4fc}
+.rem{display:flex;gap:8px;align-items:center;justify-content:center;margin:14px 0 18px;color:#c7d2fe;font-size:14px}
+.rem input{width:18px;height:18px;accent-color:#a78bfa}
+.go{width:100%;padding:15px;border:0;border-radius:16px;font-weight:700;font-size:17px;color:#1e1b4b;
+  background:linear-gradient(90deg,#a7f3d0,#c4b5fd,#fbcfe8);box-shadow:0 10px 24px #0004}
+.go:disabled{opacity:.6}
+.err{min-height:22px;margin-top:12px;color:#fecaca;font-size:14px}
+
+/* ---------- top bar ---------- */
+.bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.bar h2{margin:0;font-size:22px;font-weight:700;display:flex;gap:10px;align-items:center}
+.bar h2 .dot{width:12px;height:12px;border-radius:50%;background:conic-gradient(var(--green1),var(--vio2),var(--amber1),var(--green1))}
+.ghost{background:#ffffff14;border:1px solid #ffffff26;color:#e0e7ff;border-radius:999px;padding:8px 14px;font-size:14px}
+.ghost:hover{background:#ffffff26}
+
+/* ---------- total ---------- */
+.total{position:relative;overflow:hidden;border-radius:30px;padding:28px 26px 26px;margin-bottom:18px;
+  background:linear-gradient(120deg,#ffffff22,#ffffff0c);border:1px solid #ffffff30;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 24px 60px #0005}
+.total::before{content:"";position:absolute;inset:-40% -10% auto auto;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,#f0abfc55,transparent 65%)}
+.total .k{font-size:16px;color:#c7d2fe;font-weight:500}
+.total .v{display:block;font-size:clamp(40px,9vw,64px);font-weight:800;letter-spacing:-1px;margin:4px 0 14px;
+  background:linear-gradient(90deg,#fff,#e9d5ff 40%,#a7f3d0);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:right}
+.mix{display:flex;height:12px;border-radius:999px;overflow:hidden;background:#ffffff1a;gap:2px}
+.mix span{display:block;height:100%;transition:width .6s}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:13px;color:#ddd6fe}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:6px;vertical-align:-1px}
+
+/* ---------- tiles ---------- */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:380px){.grid{gap:10px}}
+.tile{position:relative;overflow:hidden;border:0;text-align:right;color:#fff;border-radius:26px;padding:18px 18px 16px;min-height:178px;
+  display:flex;flex-direction:column;box-shadow:0 18px 40px #0004;transition:transform .15s, box-shadow .15s}
+.tile:hover{transform:translateY(-3px);box-shadow:0 24px 50px #0005}
+.tile:active{transform:scale(.98)}
+.tile::after{content:"";position:absolute;width:160px;height:160px;border-radius:50%;left:-50px;bottom:-70px;background:#ffffff22}
+.tile.sav{background:linear-gradient(145deg,var(--green1),var(--green2))}
+.tile.osh{background:linear-gradient(145deg,var(--amber1),var(--amber2))}
+.tile.pen{background:linear-gradient(145deg,var(--vio1),var(--vio2))}
+.tile.exp{background:linear-gradient(145deg,var(--rose1),var(--rose2))}
+.ic{width:42px;height:42px;border-radius:14px;background:#ffffff33;display:grid;place-items:center;margin-bottom:12px}
+.ic svg{width:24px;height:24px}
+.tile .t{font-size:16px;font-weight:600;opacity:.95}
+.tile .a{font-size:clamp(22px,4.6vw,28px);font-weight:800;margin:6px 0 auto;text-align:right}
+.tile .s{font-size:12.5px;opacity:.9;margin-top:10px;position:relative;z-index:1}
+.tile .pill{position:absolute;top:16px;left:16px;font-size:12px;font-weight:600;background:#ffffff33;border-radius:999px;padding:4px 10px}
+.edit{position:absolute;top:14px;left:14px;width:36px;height:36px;border-radius:12px;background:#ffffff33;border:0;color:#fff;display:grid;place-items:center;z-index:2}
+.edit:hover{background:#ffffff55}
+.edit svg{width:18px;height:18px}
+.skel{display:inline-block;width:70%;height:26px;border-radius:8px;background:linear-gradient(90deg,#ffffff22,#ffffff44,#ffffff22);background-size:200% 100%;animation:sk 1.2s infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.foot{margin-top:18px;font-size:12.5px;color:#a5b4fc;line-height:1.6}
+.toast{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 18px);left:50%;transform:translateX(-50%);background:#0f172aee;color:#fff;
+  padding:12px 18px;border-radius:14px;font-size:14px;box-shadow:0 10px 30px #0006;max-width:92vw;z-index:50}
+.toast.warn{background:#7c2d12ee}
+
+/* ---------- savings page ---------- */
+.hero{border-radius:30px;padding:26px;background:linear-gradient(145deg,var(--green1),var(--green2));box-shadow:0 24px 60px #0005;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;left:-90px;bottom:-140px;background:#ffffff22}
+.hero .t{font-size:18px;font-weight:600}
+.hero .a{display:block;font-size:clamp(40px,10vw,64px);font-weight:800;margin:6px 0 4px;text-align:right}
+.hero .g{font-size:15px;opacity:.95}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+.chip{border:1px solid #ffffff30;background:#ffffff14;color:#e0e7ff;border-radius:999px;padding:8px 14px;font-size:14px}
+.chip.on{background:#fff;color:#065f46;border-color:#fff;font-weight:700}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+@media (max-width:600px){.facts{grid-template-columns:1fr}}
+.fact{background:#ffffff14;border:1px solid #ffffff22;border-radius:20px;padding:14px 16px}
+.fact .k{font-size:13px;color:#c7d2fe}
+.fact .v{font-size:20px;font-weight:700;margin-top:2px}
+
+/* ---------- dialog ---------- */
+dialog{border:0;border-radius:24px;padding:0;width:min(92vw,380px);color:var(--ink);box-shadow:0 30px 80px #0007}
+dialog::backdrop{background:#0f172a99;backdrop-filter:blur(3px)}
+dialog form{padding:24px}
+dialog h3{margin:0 0 6px;font-size:20px}
+dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
+.inp{width:100%;padding:14px;border-radius:14px;border:2px solid #fde68a;font:inherit;font-size:24px;font-weight:700;text-align:center;outline:none}
+.inp:focus{border-color:var(--amber2)}
+.acts{display:flex;gap:10px;margin-top:16px}
+.acts button{flex:1;padding:13px;border-radius:14px;border:0;font-weight:700;font-size:16px}
+.acts .ok{background:linear-gradient(90deg,var(--amber1),var(--amber2));color:#fff}
+.acts .no{background:#f1f5f9;color:#334155}
+.tok{margin-top:14px;font-size:13px;color:var(--mut)}
+.tok summary{cursor:pointer}
+.tok input{width:100%;margin-top:8px;padding:10px;border-radius:10px;border:1px solid #cbd5e1;font:inherit;font-size:13px;direction:ltr}
+</style>
+</head>
+<body>
+
+<!-- 1. password -->
+<section id="lock">
+  <form class="lockcard" id="lf" autocomplete="on">
+    <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+    <h1>הון עצמי</h1>
+    <p>הכנס סיסמה כדי להיכנס</p>
+    <input type="text" name="username" value="hon" autocomplete="username" hidden>
+    <input class="pw" id="pw" type="password" placeholder="סיסמה" autocomplete="current-password" required>
+    <label class="rem"><input type="checkbox" id="rem" checked> זכור אותי במכשיר הזה</label>
+    <button class="go" id="go">כניסה</button>
+    <div class="err" id="err"></div>
+  </form>
+</section>
+
+<!-- 2. home -->
+<main class="wrap" id="home" hidden>
+  <div class="bar">
+    <h2><span class="dot"></span>הון עצמי</h2>
+    <button class="ghost" id="logout" type="button">יציאה</button>
+  </div>
+
+  <section class="total">
+    <span class="k">סה״כ הון עצמי</span>
+    <span class="v num" id="tot"><span class="skel"></span></span>
+    <div class="mix" id="mix"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section class="grid">
+    <button class="tile sav" id="t-sav" type="button">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7c-1-2-3.5-3-7-3C6.5 4 3 7 3 11c0 2.4 1.2 4.4 3 5.6V20h3v-2h5v2h3v-3.3c1.2-.8 2.1-1.9 2.6-3.2H22V9.5h-1.6A6 6 0 0 0 19 7z"/><circle cx="16" cy="10" r=".8" fill="#fff"/></svg></span>
+      <span class="t">חסכון</span>
+      <span class="a num" id="v-sav"><span class="skel"></span></span>
+      <span class="s" id="s-sav">פיקדון שקלי מובטח</span>
+    </button>
+
+    <div class="tile osh" id="t-osh" role="group">
+      <button class="edit" id="editOsh" type="button" aria-label="עריכת יתרת העו״ש"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20h18"/></svg></span>
+      <span class="t">עו״ש</span>
+      <span class="a num" id="v-osh"><span class="skel"></span></span>
+      <span class="s" id="s-osh">יתרה בחשבון</span>
+    </div>
+
+    <button class="tile pen" id="t-pen" type="button">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9.3-9A5.3 5.3 0 0 1 12 6.5 5.3 5.3 0 0 1 21.3 12C19 16.6 12 21 12 21z"/></svg></span>
+      <span class="t">חיסכון פנסיוני</span>
+      <span class="a num" id="v-pen"><span class="skel"></span></span>
+      <span class="s" id="s-pen">שחר ולוטם</span>
+    </button>
+
+    <div class="tile exp" id="t-exp">
+      <span class="pill">בקרוב</span>
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></span>
+      <span class="t">הוצאות</span>
+      <span class="a" style="font-size:20px;opacity:.9">עוד לא נבנה</span>
+      <span class="s">לא נכלל בסה״כ</span>
+    </div>
+  </section>
+
+  <div class="foot" id="foot"></div>
+</main>
+
+<!-- 3. savings detail -->
+<main class="wrap" id="savings" hidden>
+  <div class="bar">
+    <button class="ghost" id="back" type="button">→ חזרה</button>
+    <h2>חסכון</h2>
+  </div>
+  <section class="hero">
+    <span class="t">פיקדון שקלי מובטח</span>
+    <span class="a num" id="d-val">—</span>
+    <span class="g" id="d-gain"></span>
+  </section>
+  <div class="chips" id="chips"></div>
+  <div class="facts">
+    <div class="fact"><div class="k">ריבית שנתית</div><div class="v num" id="d-rate">—</div></div>
+    <div class="fact"><div class="k">סכום ההפקדה</div><div class="v num" id="d-amt">—</div></div>
+    <div class="fact"><div class="k">נכון ל</div><div class="v num" id="d-asof">—</div></div>
+  </div>
+  <div class="foot" id="d-note"></div>
+</main>
+
+<dialog id="dlg">
+  <form method="dialog" id="df">
+    <h3>יתרת עו״ש</h3>
+    <p>הכנס את היתרה העדכנית בשקלים</p>
+    <input class="inp num" id="oshIn" inputmode="decimal" autocomplete="off">
+    <details class="tok" id="tokBox">
+      <summary>שמירה לכל המכשירים (GitHub)</summary>
+      <div style="margin-top:6px">בלי טוקן הערך נשמר רק במכשיר הזה. אם כבר חיברת את GitHub בדשבורד ההשקעות, הטוקן נמצא כאן אוטומטית.</div>
+      <input id="tokIn" type="password" placeholder="github_pat_…" autocomplete="off">
+    </details>
+    <div class="acts"><button class="ok" value="ok">שמור</button><button class="no" value="cancel" formnovalidate>ביטול</button></div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var OWNER="benhurshahar-rgb", REPO="stocks-dashboard";
+var API="https://api.github.com/repos/"+OWNER+"/"+REPO;
+var OSH_PATH="hon/osh.enc.json";
+var OSH_DEFAULT=20000;
+// Shared with the pension dashboard (same site): the same password and the same remembered key.
+var PEN_URL="../../pension-dashboard/";
+var PEN_DATA=PEN_URL+"data.enc.json";
+var PEN_STORE="pension-dashboard-key";
+var STOCKS_URL="../";
+var DEPOSIT_NAME="פיקדון שקלי מובטח";
+var ORDER=["1d","1w","1m","ytd","1y","3y"];
+var LABEL={"1d":"יום","1w":"שבוע","1m":"חודש","ytd":"מתחילת השנה","1y":"שנה","3y":"3 שנים"};
+
+var $=function(id){return document.getElementById(id);};
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{ if(v==null) localStorage.removeItem(k); else localStorage.setItem(k,v);}catch(e){}}
+function ils(v){return v==null?"—":"₪"+Math.round(v).toLocaleString("en-US");}
+function fmtDate(d){ if(!d) return "—"; var p=String(d).slice(0,10).split("-"); return p[2]+"."+p[1]+"."+p[0]; }
+function days(a,b){return Math.round((Date.parse(b)-Date.parse(a))/864e5);}
+var ub64=function(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0);});};
+var b64=function(u){var a=new Uint8Array(u),s="";for(var i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);};
+function b64utf(str){return btoa(unescape(encodeURIComponent(str)));}
+function unb64utf(s){return decodeURIComponent(escape(atob(s.replace(/\n/g,""))));}
+var toastT;
+function toast(t,warn){var el=$("toast");el.textContent=t;el.className="toast"+(warn?" warn":"");el.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){el.hidden=true;},warn?6000:3200);}
+
+/* ---------- crypto (same scheme as the pension dashboard) ---------- */
+function deriveKey(pw,enc){
+  return crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]).then(function(base){
+    return crypto.subtle.deriveKey({name:"PBKDF2",salt:ub64(enc.salt),iterations:enc.iterations,hash:"SHA-256"},base,{name:"AES-GCM",length:256},true,["decrypt","encrypt"]);
+  });
+}
+function decrypt(key,enc){
+  return crypto.subtle.decrypt({name:"AES-GCM",iv:ub64(enc.iv)},key,ub64(enc.ct)).then(function(pt){return JSON.parse(new TextDecoder().decode(pt));});
+}
+function encrypt(key,obj){
+  var iv=crypto.getRandomValues(new Uint8Array(12));
+  return crypto.subtle.encrypt({name:"AES-GCM",iv:iv},key,new TextEncoder().encode(JSON.stringify(obj))).then(function(ct){return {v:1,iv:b64(iv),ct:b64(ct)};});
+}
+
+/* ---------- state ---------- */
+var ENC=null, KEY=null, PEN=null, CFG=null, DATA=null, OSH=null, oshSha=null;
+var period=lsGet("period")||"1y";
+if(ORDER.indexOf(period)<0) period="1y";
+
+/* ---------- 1. password ---------- */
+fetch(PEN_DATA+"?t="+Date.now(),{cache:"no-store"}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(enc){
+  ENC=enc;
+  if(enc.empty){ $("err").textContent="הנתונים עדיין לא מוכנים."; return; }
+  var saved=null; try{ saved=JSON.parse(lsGet(PEN_STORE)||"null"); }catch(e){}
+  if(saved && saved.salt===enc.salt){
+    return crypto.subtle.importKey("raw",ub64(saved.k),"AES-GCM",false,["decrypt","encrypt"]).then(function(k){
+      return decrypt(k,enc).then(function(d){ unlock(k,d); });
+    }).catch(function(){ lsSet(PEN_STORE,null); });
+  }
+}).catch(function(){ $("err").textContent="לא הצלחתי לטעון את הנתונים. בדוק חיבור לאינטרנט."; });
+
+$("lf").addEventListener("submit",function(e){
+  e.preventDefault();
+  if(!ENC||ENC.empty) return;
+  $("go").disabled=true; $("err").textContent="פותח…";
+  var key;
+  deriveKey($("pw").value,ENC).then(function(k){ key=k; return decrypt(k,ENC); }).then(function(d){
+    if($("rem").checked){ return crypto.subtle.exportKey("raw",key).then(function(raw){ lsSet(PEN_STORE,JSON.stringify({salt:ENC.salt,k:b64(raw)})); return d; }); }
+    return d;
+  }).then(function(d){ $("err").textContent=""; unlock(key,d); })
+  .catch(function(){ $("err").textContent="סיסמה שגויה."; })
+  .then(function(){ $("go").disabled=false; });
+});
+
+$("logout").addEventListener("click",function(){ lsSet(PEN_STORE,null); location.hash=""; location.reload(); });
+
+function unlock(key,data){
+  KEY=key; PEN=data;
+  $("lock").hidden=true;
+  route();
+  render();
+  loadStocks().then(render).catch(function(){ $("v-sav").textContent="—"; $("s-sav").textContent="לא הצלחתי לטעון את הפיקדון"; });
+  loadOsh().then(render);
+}
+
+/* ---------- stocks dashboard data (deposit) ---------- */
+function fetchJson(url){ return fetch(url+(url.indexOf("?")<0?"?":"&")+"t="+Date.now(),{cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }); }
+function fresh(name){
+  // 1) raw GitHub (latest commit), 2) the copy published with the site
+  return fetchJson("https://raw.githubusercontent.com/"+OWNER+"/"+REPO+"/main/"+name).catch(function(){ return fetchJson(STOCKS_URL+name); });
+}
+function loadStocks(){
+  return Promise.all([fresh("config.json"),fresh("data.json")]).then(function(r){
+    CFG=r[0]; DATA=r[1];
+    // the stocks dashboard keeps unsaved edits on this device – use them too, so both pages agree
+    var local=lsGet("cfg-local"); if(local){ try{ var l=JSON.parse(local); if(l&&l.assets) CFG=l; }catch(e){} }
+  });
+}
+function depositAsset(){
+  if(!CFG) return null;
+  var deps=CFG.assets.filter(function(a){return a.type==="deposit";});
+  return deps.filter(function(a){return a.name===DEPOSIT_NAME;})[0]||deps[0]||null;
+}
+function depositValue(p){
+  var a=depositAsset(); if(!a||!DATA||!DATA.periods||!DATA.periods[p]) return null;
+  var amount=+CFG.amount||3700000;
+  return amount*Math.pow(1+(+a.rate||0)/100, days(DATA.periods[p],DATA.asOf)/365);
+}
+
+/* ---------- עו״ש ---------- */
+function token(){ return lsGet("gh-token")||""; }
+function gh(path,opt){
+  opt=opt||{}; var h={"Accept":"application/vnd.github+json"};
+  if(token()) h.Authorization="Bearer "+token();
+  if(opt.body) h["Content-Type"]="application/json";
+  return fetch(API+path,{method:opt.method||"GET",headers:h,body:opt.body?JSON.stringify(opt.body):undefined,cache:"no-store"});
+}
+function loadOshRemote(){
+  var viaApi=token()?gh("/contents/"+OSH_PATH+"?ref=main").then(function(r){
+    if(r.status===404) return null; if(!r.ok) throw 0;
+    return r.json().then(function(j){ oshSha=j.sha; return JSON.parse(unb64utf(j.content)); });
+  }):Promise.reject();
+  return viaApi.catch(function(){
+    return fetchJson("https://raw.githubusercontent.com/"+OWNER+"/"+REPO+"/main/"+OSH_PATH).catch(function(){ return fetchJson(OSH_PATH.replace("hon/","")); }).catch(function(){ return null; });
+  });
+}
+function loadOsh(){
+  var localEnc=null; try{ localEnc=JSON.parse(lsGet("hon-osh-local")||"null"); }catch(e){}
+  return loadOshRemote().then(function(remoteEnc){
+    var tries=[remoteEnc,localEnc].filter(Boolean).map(function(e){ return decrypt(KEY,e).catch(function(){ return null; }); });
+    return Promise.all(tries);
+  }).then(function(vals){
+    vals=vals.filter(function(v){ return v&&isFinite(+v.amount); });
+    vals.sort(function(a,b){ return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
+    OSH=vals[0]||{amount:OSH_DEFAULT,updatedAt:null};
+  });
+}
+function saveOsh(amount){
+  var rec={amount:amount,updatedAt:new Date().toISOString()};
+  OSH=rec; render();
+  return encrypt(KEY,rec).then(function(enc){
+    var text=JSON.stringify(enc)+"\n";
+    if(!token()){ lsSet("hon-osh-local",JSON.stringify(enc)); toast("נשמר במכשיר הזה. כדי שיופיע בכל המכשירים צריך לחבר GitHub.",true); return; }
+    var getSha=oshSha?Promise.resolve(oshSha):gh("/contents/"+OSH_PATH+"?ref=main").then(function(r){ return r.ok?r.json().then(function(j){return j.sha;}):null; });
+    return getSha.then(function(sha){
+      var body={message:"עדכון יתרת עו״ש (מוצפן)",content:b64utf(text),branch:"main"}; if(sha) body.sha=sha;
+      return gh("/contents/"+OSH_PATH,{method:"PUT",body:body});
+    }).then(function(r){
+      if(!r.ok) return r.json().then(function(j){ throw new Error(j.message||r.status); });
+      return r.json().then(function(j){ oshSha=j.content.sha; lsSet("hon-osh-local",null); toast("נשמר ✓"); });
+    }).catch(function(e){
+      lsSet("hon-osh-local",JSON.stringify(enc));
+      toast("השמירה ב-GitHub נכשלה ("+e.message+"). נשמר במכשיר הזה.",true);
+    });
+  });
+}
+$("editOsh").addEventListener("click",function(e){
+  e.stopPropagation();
+  $("oshIn").value=OSH?Math.round(OSH.amount).toLocaleString("en-US"):"";
+  $("tokIn").value=token();
+  $("tokBox").open=!token();
+  $("dlg").showModal();
+  setTimeout(function(){ $("oshIn").select(); },50);
+});
+$("t-osh").addEventListener("click",function(e){ if(e.target.closest("#editOsh")) return; $("editOsh").click(); });
+$("df").addEventListener("submit",function(e){
+  var btn=e.submitter; if(btn&&btn.value==="cancel") return;
+  var v=parseFloat(String($("oshIn").value).replace(/[,₪\s]/g,""));
+  if(!isFinite(v)){ e.preventDefault(); $("oshIn").focus(); return; }
+  var t=$("tokIn").value.trim(); if(t!==token()) lsSet("gh-token",t||null);
+  saveOsh(v);
+});
+
+/* ---------- pension ---------- */
+$("t-pen").addEventListener("click",function(){ location.href=PEN_URL; });
+
+/* ---------- routing ---------- */
+$("t-sav").addEventListener("click",function(){ location.hash="#savings"; });
+$("back").addEventListener("click",function(){ if(history.length>1 && location.hash==="#savings") history.back(); else location.hash=""; });
+window.addEventListener("hashchange",route);
+function route(){
+  if(!KEY) return;
+  var s=location.hash==="#savings";
+  $("home").hidden=s; $("savings").hidden=!s;
+  window.scrollTo(0,0);
+}
+
+/* ---------- render ---------- */
+var COLORS={sav:"#34d399",osh:"#fbbf24",pen:"#c084fc"};
+function render(){
+  if(!KEY) return;
+  var dep=depositValue(period), osh=OSH?+OSH.amount:null, pen=PEN&&PEN.family?PEN.family.total:null;
+
+  // tiles
+  if(CFG) { $("v-sav").textContent=ils(dep); $("s-sav").textContent=DEPOSIT_NAME+" · "+LABEL[period]; }
+  if(OSH) { $("v-osh").textContent=ils(osh); $("s-osh").textContent=OSH.updatedAt?"עודכן "+fmtDate(new Date(OSH.updatedAt).toLocaleDateString("sv-SE",{timeZone:"Asia/Jerusalem"})):"ערך התחלתי · לחץ לעריכה"; }
+  if(PEN) {
+    $("v-pen").textContent=ils(pen);
+    var ppl=(PEN.people||[]).map(function(p){ return p.name+" "+shortIls(p.total); });
+    $("s-pen").textContent=ppl.length?ppl.join(" · "):"שחר ולוטם";
+  }
+
+  // total
+  var parts=[["sav","חסכון",dep],["osh","עו״ש",osh],["pen","פנסיה",pen]];
+  var ready=parts.every(function(p){return p[2]!=null;});
+  var sum=parts.reduce(function(s,p){return s+(p[2]||0);},0);
+  if(ready||(CFG&&OSH)) $("tot").textContent=ils(sum);
+  $("mix").innerHTML=sum?parts.filter(function(p){return p[2];}).map(function(p){ return '<span style="width:'+(p[2]/sum*100).toFixed(2)+'%;background:'+COLORS[p[0]]+'"></span>'; }).join(""):"";
+  $("legend").innerHTML=sum?parts.filter(function(p){return p[2];}).map(function(p){ return '<span><i style="background:'+COLORS[p[0]]+'"></i>'+p[1]+' <span class="num">'+(p[2]/sum<0.01?"<1":Math.round(p[2]/sum*100))+'%</span></span>'; }).join(""):"";
+
+  var f=[];
+  if(DATA) f.push("פיקדון: לפי דשבורד ההשקעות, תקופה \""+LABEL[period]+"\", נכון ל-"+fmtDate(DATA.asOf));
+  if(PEN) f.push("פנסיה: הערכת שווי מ-"+fmtDate(PEN.today));
+  f.push("הוצאות לא נכללות בסה״כ");
+  $("foot").textContent=f.join(" · ");
+
+  // savings page
+  var a=depositAsset();
+  if(a&&DATA){
+    var amount=+CFG.amount||3700000;
+    $("d-val").textContent=ils(dep);
+    var gain=dep-amount;
+    $("d-gain").innerHTML='<span class="num">'+(gain>=0?"+":"")+ils(gain)+'</span> ריבית מאז '+fmtDate(DATA.periods[period])+' ('+LABEL[period]+')';
+    $("d-rate").textContent=(+a.rate).toFixed(2)+"%";
+    $("d-amt").textContent=ils(amount);
+    $("d-asof").textContent=fmtDate(DATA.asOf);
+    $("d-note").textContent="הנתון מסונכרן עם דשבורד ההשקעות: אותו סכום, אותה ריבית ואותה תקופה. ריבית דריבית שנתית, לפני מס. שינוי תקופה כאן משנה גם את התקופה בדשבורד ההשקעות במכשיר הזה.";
+  }
+  $("chips").innerHTML=ORDER.filter(function(p){ return DATA&&DATA.periods&&DATA.periods[p]; }).map(function(p){
+    return '<button type="button" class="chip'+(p===period?" on":"")+'" data-p="'+p+'">'+LABEL[p]+'</button>';
+  }).join("");
+}
+function shortIls(v){ if(v==null) return ""; var a=Math.abs(v); if(a>=1e6) return "₪"+(v/1e6).toFixed(2)+"M"; if(a>=1e3) return "₪"+Math.round(v/1e3)+"K"; return ils(v); }
+$("chips").addEventListener("click",function(e){
+  var b=e.target.closest(".chip"); if(!b) return;
+  period=b.getAttribute("data-p"); lsSet("period",period); render();
+});
+
+// keep it fresh when coming back to the tab
+document.addEventListener("visibilitychange",function(){
+  if(document.visibilityState==="visible"&&KEY){ loadStocks().then(render).catch(function(){}); loadOsh().then(render); }
+});
+})();
+</script>
+</body>
+</html>
