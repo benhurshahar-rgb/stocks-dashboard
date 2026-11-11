@@ -133,6 +133,9 @@ dialog form{padding:24px}
 dialog h3{margin:0 0 6px;font-size:20px}
 dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
 .inp{width:100%;padding:14px;border-radius:14px;border:2px solid #fde68a;font:inherit;font-size:24px;font-weight:700;text-align:center;outline:none}
+.bl{display:block;font-size:14px;font-weight:600;color:#334155;margin:10px 0 6px}
+.fxn{margin:10px 0 0!important;font-size:13px!important}
+.banks{display:flex;flex-direction:column;gap:2px;font-size:12.5px;opacity:.95;margin-top:8px;position:relative;z-index:1}
 .inp:focus{border-color:var(--amber2)}
 .acts{display:flex;gap:10px;margin-top:16px}
 .acts button{flex:1;padding:13px;border-radius:14px;border:0;font-weight:700;font-size:16px}
@@ -190,6 +193,7 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
       <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20h18"/></svg></span>
       <span class="t">עו״ש</span>
       <span class="a num" id="v-osh"><span class="skel"></span></span>
+      <span class="banks"><span>🇮🇱 ישראל <b class="num" id="b-il">—</b></span><span>🇺🇸 ארה״ב <b class="num" id="b-us">—</b></span></span>
       <span class="s" id="s-osh">יתרה בחשבון</span>
     </div>
 
@@ -235,8 +239,12 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
 <dialog id="dlg">
   <form method="dialog" id="df">
     <h3>יתרת עו״ש</h3>
-    <p>הכנס את היתרה העדכנית בשקלים</p>
-    <input class="inp num" id="oshIn" inputmode="decimal" autocomplete="off">
+    <p>הכנס את היתרות העדכניות בכל בנק</p>
+    <label class="bl">🇮🇱 בנק בישראל (₪)</label>
+    <input class="inp num" id="oshIl" inputmode="decimal" autocomplete="off">
+    <label class="bl">🇺🇸 בנק בארה״ב ($)</label>
+    <input class="inp num" id="oshUs" inputmode="decimal" autocomplete="off">
+    <p class="fxn" id="fxn"></p>
     <details class="tok" id="tokBox">
       <summary>שמירה לכל המכשירים (GitHub)</summary>
       <div style="margin-top:6px">בלי טוקן הערך נשמר רק במכשיר הזה. אם כבר חיברת את GitHub בדשבורד ההשקעות, הטוקן נמצא כאן אוטומטית.</div>
@@ -254,7 +262,7 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
 var OWNER="benhurshahar-rgb", REPO="stocks-dashboard";
 var API="https://api.github.com/repos/"+OWNER+"/"+REPO;
 var OSH_PATH="hon/osh.enc.json";
-var OSH_DEFAULT=20000;
+var OSH_DEFAULT={il:20000,us:10000};
 // Shared with the pension dashboard (same site): the same password and the same remembered key.
 var PEN_URL="../../pension-dashboard/";
 var PEN_DATA=PEN_URL+"data.enc.json";
@@ -357,6 +365,14 @@ function depositValue(p){
 }
 
 /* ---------- עו״ש ---------- */
+function usdRate(){ return (DATA&&DATA.fx&&+DATA.fx.now)||(PEN&&PEN.fx&&+PEN.fx.USD)||null; }
+function norm(o){ // older records had a single shekel amount
+  if(!o) return null;
+  if(o.il==null && o.us==null && isFinite(+o.amount)) return {il:+o.amount,us:OSH_DEFAULT.us,updatedAt:o.updatedAt};
+  if(!isFinite(+o.il)||!isFinite(+o.us)) return null;
+  return {il:+o.il,us:+o.us,updatedAt:o.updatedAt};
+}
+function oshIls(){ if(!OSH) return null; var r=usdRate(); return r?OSH.il+OSH.us*r:null; }
 function token(){ return lsGet("gh-token")||""; }
 function gh(path,opt){
   opt=opt||{}; var h={"Accept":"application/vnd.github+json"};
@@ -379,13 +395,13 @@ function loadOsh(){
     var tries=[remoteEnc,localEnc].filter(Boolean).map(function(e){ return decrypt(KEY,e).catch(function(){ return null; }); });
     return Promise.all(tries);
   }).then(function(vals){
-    vals=vals.filter(function(v){ return v&&isFinite(+v.amount); });
+    vals=vals.map(norm).filter(Boolean);
     vals.sort(function(a,b){ return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
-    OSH=vals[0]||{amount:OSH_DEFAULT,updatedAt:null};
+    OSH=vals[0]||{il:OSH_DEFAULT.il,us:OSH_DEFAULT.us,updatedAt:null};
   });
 }
-function saveOsh(amount){
-  var rec={amount:amount,updatedAt:new Date().toISOString()};
+function saveOsh(il,us){
+  var rec={il:il,us:us,updatedAt:new Date().toISOString()};
   OSH=rec; render();
   return encrypt(KEY,rec).then(function(enc){
     var text=JSON.stringify(enc)+"\n";
@@ -405,19 +421,23 @@ function saveOsh(amount){
 }
 $("editOsh").addEventListener("click",function(e){
   e.stopPropagation();
-  $("oshIn").value=OSH?Math.round(OSH.amount).toLocaleString("en-US"):"";
+  $("oshIl").value=OSH?Math.round(OSH.il).toLocaleString("en-US"):"";
+  $("oshUs").value=OSH?Math.round(OSH.us).toLocaleString("en-US"):"";
+  var rt=usdRate(); $("fxn").textContent=rt?"שער הדולר עכשיו: ₪"+rt.toFixed(3)+" — הסכום בדולרים יומר לשקלים אוטומטית.":"";
   $("tokIn").value=token();
   $("tokBox").open=!token();
   $("dlg").showModal();
-  setTimeout(function(){ $("oshIn").select(); },50);
+  setTimeout(function(){ $("oshIl").select(); },50);
 });
 $("t-osh").addEventListener("click",function(e){ if(e.target.closest("#editOsh")) return; $("editOsh").click(); });
 $("df").addEventListener("submit",function(e){
   var btn=e.submitter; if(btn&&btn.value==="cancel") return;
-  var v=parseFloat(String($("oshIn").value).replace(/[,₪\s]/g,""));
-  if(!isFinite(v)){ e.preventDefault(); $("oshIn").focus(); return; }
+  var num=function(id){ var x=String($(id).value).replace(/[,₪$\s]/g,""); return x===""?0:parseFloat(x); };
+  var il=num("oshIl"), us=num("oshUs");
+  if(!isFinite(il)){ e.preventDefault(); $("oshIl").focus(); return; }
+  if(!isFinite(us)){ e.preventDefault(); $("oshUs").focus(); return; }
   var t=$("tokIn").value.trim(); if(t!==token()) lsSet("gh-token",t||null);
-  saveOsh(v);
+  saveOsh(il,us);
 });
 
 /* ---------- pension ---------- */
@@ -457,11 +477,12 @@ function penSplit(){
 var COLORS={sav:"#34d399",osh:"#fbbf24",pen:"#c084fc"};
 function render(){
   if(!KEY) return;
-  var dep=depositValue(period), osh=OSH?+OSH.amount:null, pen=PEN&&PEN.family?PEN.family.total:null, ps=penSplit();
+  var dep=depositValue(period), osh=oshIls(), pen=PEN&&PEN.family?PEN.family.total:null, ps=penSplit();
 
   // tiles
   if(CFG) { $("v-sav").textContent=ils(dep); $("s-sav").textContent=DEPOSIT_NAME+" · "+LABEL[period]; }
-  if(OSH) { $("v-osh").textContent=ils(osh); $("s-osh").textContent=OSH.updatedAt?"עודכן "+fmtDate(new Date(OSH.updatedAt).toLocaleDateString("sv-SE",{timeZone:"Asia/Jerusalem"})):"ערך התחלתי · לחץ לעריכה"; }
+  if(OSH) { $("v-osh").textContent=osh==null?"…":ils(osh);
+    $("b-il").textContent=ils(OSH.il); $("b-us").textContent="$"+Math.round(OSH.us).toLocaleString("en-US"); $("s-osh").textContent=OSH.updatedAt?"עודכן "+fmtDate(new Date(OSH.updatedAt).toLocaleDateString("sv-SE",{timeZone:"Asia/Jerusalem"})):"לחץ לעריכה"; }
   if(PEN) {
     $("v-pen").textContent=ils(pen);
     var ppl=(PEN.people||[]).map(function(p){ return p.name+" "+shortIls(p.total); });
@@ -469,7 +490,7 @@ function render(){
   }
 
   // liquid / not liquid
-  if(CFG&&OSH&&ps){
+  if(CFG&&OSH&&ps&&osh!=null){
     $("liq").textContent=ils((dep||0)+(osh||0)+ps.liq);
     $("ill").textContent=ils(ps.ill);
     $("liq-d").textContent="עו״ש · חסכון"+(ps.liq?" · השתלמות פתוחות "+shortIls(ps.liq):"");
@@ -480,7 +501,7 @@ function render(){
   var parts=[["sav","חסכון",dep],["osh","עו״ש",osh],["pen","פנסיה",pen]];
   var ready=parts.every(function(p){return p[2]!=null;});
   var sum=parts.reduce(function(s,p){return s+(p[2]||0);},0);
-  if(ready||(CFG&&OSH)) $("tot").textContent=ils(sum);
+  if(ready) $("tot").textContent=ils(sum);
   $("mix").innerHTML=sum?parts.filter(function(p){return p[2];}).map(function(p){ return '<span style="width:'+(p[2]/sum*100).toFixed(2)+'%;background:'+COLORS[p[0]]+'"></span>'; }).join(""):"";
   $("legend").innerHTML=sum?parts.filter(function(p){return p[2];}).map(function(p){ return '<span><i style="background:'+COLORS[p[0]]+'"></i>'+p[1]+' <span class="num">'+(p[2]/sum<0.01?"<1":Math.round(p[2]/sum*100))+'%</span></span>'; }).join(""):"";
 
