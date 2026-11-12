@@ -173,6 +173,9 @@ button{font:inherit;cursor:pointer}
 .fcard .k{font-size:12.5px;color:#c7d2fe}
 .fcard .v{font-size:clamp(14px,13cqi,22px);font-weight:800;white-space:nowrap;margin-top:2px}
 .fcard .d{font-size:11.5px;margin-top:2px}
+.fleg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:13.5px}
+.fleg i,.fl i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:6px}
+.fl{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-top:5px;color:#e0e7ff}
 .dlgnote{font-size:12.5px!important;margin-top:10px!important}
 
 /* ---------- dialog ---------- */
@@ -573,7 +576,7 @@ function drawChart(box,pts,o){
   o=o||{}; box.innerHTML="";
   if(!pts||pts.length<2){ box.innerHTML='<div class="cnote" style="padding:30px 0;text-align:center">אין מספיק נתונים לטווח הזה</div>'; return; }
   var W=Math.max(220,box.clientWidth||320), H=o.h||150, L=52, R=8, T=10, B=22;
-  var ys=pts.map(function(q){return q[1];}), lo=Math.min.apply(null,ys.concat(o.lo||[])), hi=Math.max.apply(null,ys.concat(o.hi||[]));
+  var ys=pts.map(function(q){return q[1];}), lo=Math.min.apply(null,ys.concat(o.lo||[],o.sub||[])), hi=Math.max.apply(null,ys.concat(o.hi||[]));
   if(hi-lo<Math.abs(hi)*0.002){ var m=(hi+lo)/2, e=Math.max(1,Math.abs(m)*0.002); lo=m-e; hi=m+e; }
   var padv=(hi-lo)*0.08; lo-=padv; hi+=padv;
   var x0=pts[0][0], x1=pts[pts.length-1][0];
@@ -587,6 +590,11 @@ function drawChart(box,pts,o){
     g+='<text x="'+(L-6)+'" y="'+(+y+4)+'" text-anchor="end" font-size="10.5" fill="#c7d2fe">'+shortIls(v)+'</text>'; }
   if(o.base!=null && o.base>lo && o.base<hi){ var by=Y(o.base).toFixed(1); g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+by+'" y2="'+by+'" stroke="#fff" stroke-opacity=".45" stroke-dasharray="3 4"/>'; }
   [0,0.5,1].forEach(function(f,k){ var t=x0+(x1-x0)*f; g+='<text x="'+X(t).toFixed(1)+'" y="'+(H-5)+'" text-anchor="'+(k===0?"start":k===2?"end":"middle")+'" font-size="10.5" fill="#c7d2fe">'+dShort(t)+'</text>'; });
+  if(o.sub){ var sl=pts.map(function(q,i){ return (i?"L":"M")+X(q[0]).toFixed(1)+","+Y(o.sub[i]).toFixed(1); }).join(""), rev="";
+    for(var k2=pts.length-1;k2>=0;k2--) rev+="L"+X(pts[k2][0]).toFixed(1)+","+Y(o.sub[k2]).toFixed(1);
+    g+='<path d="'+sl+'L'+X(x1).toFixed(1)+','+(H-B)+'L'+L+','+(H-B)+'Z" fill="'+o.subColor+'" fill-opacity=".30"/>';
+    g+='<path d="'+line+rev+'Z" fill="'+(o.topColor||col)+'" fill-opacity=".30"/>';
+    g+='<path d="'+sl+'" fill="none" stroke="'+o.subColor+'" stroke-width="2" stroke-linejoin="round"/>'; }
   if(o.lo&&o.hi){ var bd=pts.map(function(q,i){ return (i?"L":"M")+X(q[0]).toFixed(1)+","+Y(o.hi[i]).toFixed(1); }).join("");
     for(var k=pts.length-1;k>=0;k--) bd+="L"+X(pts[k][0]).toFixed(1)+","+Y(o.lo[k]).toFixed(1);
     g+='<path d="'+bd+'Z" fill="'+col+'" fill-opacity=".16"/>'; }
@@ -603,7 +611,7 @@ function drawChart(box,pts,o){
     hov.style.display=""; hov.querySelector("line").setAttribute("x1",px); hov.querySelector("line").setAttribute("x2",px);
     hov.querySelector("circle").setAttribute("cx",px); hov.querySelector("circle").setAttribute("cy",py);
     var ch=base?q[1]/base-1:0;
-    tip.innerHTML='<b class="num">'+ils(q[1])+'</b>'+dShort(q[0])+' · <span class="num '+(ch>=0?"up":"down")+'">'+pctStr(ch)+'</span>'+(o.lo?'<br><span class="num">'+shortIls(o.lo[best])+' – '+shortIls(o.hi[best])+'</span>':'');
+    tip.innerHTML='<b class="num">'+ils(q[1])+'</b>'+dShort(q[0])+' · <span class="num '+(ch>=0?"up":"down")+'">'+pctStr(ch)+'</span>'+(o.sub?'<br>נזיל <span class="num">'+shortIls(o.sub[best])+'</span> · לא נזיל <span class="num">'+shortIls(q[1]-o.sub[best])+'</span>':'');
     tip.hidden=false; var lx=px/W*rc.width; tip.style.left=Math.min(Math.max(lx,60),rc.width-60)+"px"; tip.style.top="0px";
   }
   svg.addEventListener("pointermove",move); svg.addEventListener("pointerdown",move);
@@ -678,12 +686,13 @@ function fcLoad(){
   $("fcRate").value=FC.rate; $("fcSave").value=Math.round(FC.save).toLocaleString("en-US"); $("fcPen").value=FC.pen; $("fcPenDep").value=Math.round(FC.penDep).toLocaleString("en-US");
 }
 function project(penRate,months){
-  var amount=+CFG.amount||3700000, osh=oshIls()||0, pen=PEN.family.total, sav=0, out=[];
+  var amount=+CFG.amount||3700000, osh=oshIls()||0, ps=penSplit(), penL=ps.liq, pen=PEN.family.total-ps.liq, sav=0, out=[];
   var md=Math.pow(1+FC.rate/100,1/12), mp=Math.pow(1+penRate/100,1/12);
   for(var m=0;m<=months;m++){
-    if(m>0){ sav=sav*md+FC.save; pen=pen*mp+FC.penDep; }
+    if(m>0){ sav=sav*md+FC.save; pen=pen*mp+FC.penDep; penL=penL*mp; }
     var dep=amount*Math.pow(md,m);
-    out.push({m:m, dep:dep, sav:sav, pen:pen, total:dep+sav+pen+osh});
+    var liq=dep+sav+osh+penL;
+    out.push({m:m, liq:liq, ill:pen, total:liq+pen});
   }
   return out;
 }
@@ -696,15 +705,17 @@ function drawForecast(){
   var now=new Date(), t=function(m){ return Date.UTC(now.getFullYear(),now.getMonth()+m,now.getDate()); };
   var pts=mid.map(function(x){ return [t(x.m),x.total]; });
   var end=mid[M], start=mid[0].total;
-  $("fcChg").innerHTML='בעוד '+FCY+' שנים: <b class="num up">'+ils(end.total)+'</b> <span class="num">(×'+(end.total/start).toFixed(2)+')</span> · טווח <span class="num">'+shortIls(lo[M].total)+' – '+shortIls(hi[M].total)+'</span>';
-  drawChart($("fcChart"),pts,{h:210,color:"#fde68a",lo:lo.map(function(x){return x.total;}),hi:hi.map(function(x){return x.total;}),base:start,label:"תחזית ההון העצמי"});
+  $("fcChg").innerHTML='בעוד '+FCY+' שנים: <b class="num up">'+ils(end.total)+'</b> <span class="num">(×'+(end.total/start).toFixed(2)+')</span> · טווח <span class="num">'+shortIls(lo[M].total)+' – '+shortIls(hi[M].total)+'</span>'+
+    '<div class="fleg"><span><i style="background:#34d399"></i>הון נזיל <b class="num">'+ils(end.liq)+'</b></span><span><i style="background:#c084fc"></i>הון לא נזיל <b class="num">'+ils(end.ill)+'</b></span><span><i style="background:#fde68a"></i>סה״כ</span></div>';
+  drawChart($("fcChart"),pts,{h:210,color:"#fde68a",lo:lo.map(function(x){return x.total;}),hi:hi.map(function(x){return x.total;}),sub:mid.map(function(x){return x.liq;}),subColor:"#34d399",topColor:"#c084fc",label:"תחזית ההון העצמי: נזיל, לא נזיל וסה״כ"});
   var ys=[1,2,3,5,10,20,30].filter(function(y){ return y<=FCY; }).slice(-5); if(FCY===5) ys=[1,2,3,4,5];
   $("fcCards").innerHTML=ys.map(function(y){ var x=mid[y*12];
-    return '<div class="fcard"><div class="k">בעוד '+(y===1?"שנה":y===2?"שנתיים":y+" שנים")+'</div><div class="v num">'+ils(x.total)+'</div><div class="d up num">+'+shortIls(x.total-start)+'</div></div>'; }).join("");
+    return '<div class="fcard"><div class="k">בעוד '+(y===1?"שנה":y===2?"שנתיים":y+" שנים")+'</div><div class="v num">'+ils(x.total)+'</div><div class="d up num">+'+shortIls(x.total-start)+'</div>'+
+      '<div class="fl"><span><i style="background:#34d399"></i>נזיל</span><b class="num">'+shortIls(x.liq)+'</b></div><div class="fl"><span><i style="background:#c084fc"></i>לא נזיל</span><b class="num">'+shortIls(x.ill)+'</b></div></div>'; }).join("");
   var h=FC.hist;
   $("fcNote").textContent="ההנחות: פיקדון של "+ils(+CFG.amount||3700000)+" בריבית "+FC.rate+"% בשנה. חסכון של "+ils(FC.save)+" בחודש שמצטרף לפיקדון באותה ריבית. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
     (h.years>0.5?" (התשואה השנתית הממוצעת שלנו ב-"+h.years.toFixed(1)+" השנים האחרונות, בלי הפקדות, הייתה "+h.ret+"%)":"")+
-    (FC.penDep?", ועוד "+ils(FC.penDep)+" הפקדות בחודש כמו בשנה האחרונה":"")+". עו״ש נשאר כמו היום. הרצועה מסביב לקו מראה מה קורה אם תשואת הפנסיה גבוהה או נמוכה ב-"+FC_BAND+" נקודות אחוז. הסכומים נומינליים, לפני מס ודמי ניהול, וזו הערכה בלבד: תשואות העבר לא מבטיחות את העתיד.";
+    (FC.penDep?", ועוד "+ils(FC.penDep)+" הפקדות בחודש כמו בשנה האחרונה":"")+". עו״ש נשאר כמו היום. הון נזיל: הפיקדון, החסכון החודשי, העו״ש וקרנות ההשתלמות שכבר פתוחות. הון לא נזיל: הפנסיה, הקופות שעוד סגורות וההפקדות החדשות לפנסיה (קופה שתיפתח בעתיד נשארת בתחזית בצד הלא נזיל). הרצועה מסביב לקו מראה מה קורה אם תשואת הפנסיה גבוהה או נמוכה ב-"+FC_BAND+" נקודות אחוז. הסכומים נומינליים, לפני מס ודמי ניהול, וזו הערכה בלבד: תשואות העבר לא מבטיחות את העתיד.";
 }
 $("fcH").addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return; FCY=+b.getAttribute("data-y"); lsSet("hon-fc-y",String(FCY)); drawForecast(); });
 ["fcRate","fcSave","fcPen","fcPenDep"].forEach(function(id){ $(id).addEventListener("change",function(){
