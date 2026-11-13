@@ -177,7 +177,7 @@ function render(){
   var dep=list.filter(function(a){return a.type==="deposit";})[0], depV=dep?value(dep,P):null;
   var withV=list.filter(function(a){return value(a,P)!=null;}), lead=withV[0], last=withV[withV.length-1];
   var beat=dep?list.filter(function(a){return a.type==="stock" && !a.index && value(a,P)!=null && value(a,P)>depV;}).length:0;
-  var h='<a href="hon/" style="display:inline-block;margin-bottom:12px;background:#2563eb;color:#fff;font-weight:700;font-size:14px;padding:9px 16px;border-radius:999px;text-decoration:none">→ חזרה להון עצמי</a><div class="top"><div><h1>חסכונות</h1>';
+  var h='<a href="hon/" style="display:inline-block;margin-bottom:12px;color:#2a78d6;font-weight:700;font-size:14px;text-decoration:none">→ חזרה להון עצמי</a><div class="top"><div><h1>חסכונות</h1>';
   h+='<div class="sub">'+ils(S.amount)+' בכל אפיק · נכון ל-'+fmtDate(S.asOf)+' · דולר/שקל '+(S.fx.now?S.fx.now.toFixed(3):"—")+'</div></div>'+
     '<button class="btn '+(token?'ghost':'')+'" type="button" id="gotoGh">⚙️ '+(token?'מחובר ל-GitHub ✓':'חיבור ל-GitHub')+'</button></div>';
   h+=updCard();
