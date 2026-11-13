@@ -162,11 +162,20 @@ button{font:inherit;cursor:pointer}
 .ptbl .num{text-align:right}
 .fc h3{font-size:19px;font-weight:700;margin:0 0 2px}
 .fc .sub{font-size:13px;color:#c7d2fe;margin-bottom:12px}
-.fcin{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.fcin{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}
 @media (max-width:760px){.fcin{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .fcin label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:#c7d2fe;background:#ffffff10;border:1px solid #ffffff22;border-radius:16px;padding:10px 12px}
 .fcin input{width:100%;border:0;border-bottom:2px solid #ffffff44;background:transparent;color:#fff;font:inherit;font-size:18px;font-weight:700;padding:2px 0;outline:none;direction:ltr;text-align:right}
 .fcin input:focus{border-color:#a7f3d0}
+.fcin input[type=month]{color-scheme:dark;font-size:16px;min-height:28px}
+.fleg button{border:1px solid #ffffff2e;background:#ffffff10;color:#e0e7ff;border-radius:999px;padding:8px 12px;font-size:13.5px;min-height:40px}
+.fleg button.on{background:#fff;color:#312e81;border-color:#fff}
+.cmp3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
+@media (max-width:600px){.cmp3{grid-template-columns:1fr}}
+#cmp .ptbl{font-size:11.5px;border-spacing:0 5px}
+#cmp .ptbl td,#cmp .ptbl th{white-space:nowrap;padding:8px 4px}
+#cmp .ptbl b{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.cmp3 .v{font-size:clamp(17px,4.6vw,22px);white-space:nowrap}
 .fcards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px}
 @media (max-width:760px){.fcards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .fcard{border-radius:18px;padding:12px;background:linear-gradient(145deg,#10b98133,#8b5cf633);border:1px solid #ffffff22;min-width:0;container-type:inline-size}
@@ -284,14 +293,16 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     <h3>תחזית: כמה הון יהיה לי בעתיד</h3>
     <div class="sub">הערכה לפי ההנחות שלמטה. אפשר לשנות כל מספר והגרף מתעדכן.</div>
     <div class="rng" id="fcH" role="group" aria-label="טווח התחזית">
+      <button type="button" data-y="1">שנה</button>
+      <button type="button" data-y="2">שנתיים</button>
+      <button type="button" data-y="3">3 שנים</button>
       <button type="button" data-y="5">5 שנים</button>
       <button type="button" data-y="10">10 שנים</button>
-      <button type="button" data-y="20">20 שנה</button>
-      <button type="button" data-y="30">30 שנה</button>
     </div>
     <div class="fcin">
       <label>ריבית על הפיקדון (% בשנה)<input id="fcRate" inputmode="decimal" autocomplete="off"></label>
       <label>חסכון חודשי (₪)<input id="fcSave" inputmode="decimal" autocomplete="off"></label>
+      <label>החסכון מתחיל בחודש<input id="fcStart" type="month" placeholder="2027-02"></label>
       <label>תשואת פנסיה וקרנות (% בשנה)<input id="fcPen" inputmode="decimal" autocomplete="off"></label>
       <label>הפקדות חודשיות לפנסיה (₪)<input id="fcPenDep" inputmode="decimal" autocomplete="off"></label>
     </div>
@@ -299,6 +310,9 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     <div class="chart" id="fcChart" style="margin-top:34px"></div>
     <div class="fcards" id="fcCards"></div>
     <div class="cnote" id="fcNote" style="margin-top:10px;line-height:1.6"></div>
+    <h3 style="margin-top:22px">תחזית מול מציאות</h3>
+    <div class="sub">כמה הערכנו, כמה יש בפועל ומה הפער</div>
+    <div id="cmp"></div>
   </section>
   <div class="foot" id="foot"></div>
 </main>
@@ -450,6 +464,7 @@ function unlock(key,data){
   render();
   loadStocks().then(render).catch(function(){ $("v-sav").textContent="—"; $("s-sav").textContent="לא הצלחתי לטעון את הפיקדון"; });
   loadOsh().then(render);
+  loadTrack().then(render);
 }
 
 /* ---------- stocks dashboard data (deposit) ---------- */
@@ -576,7 +591,7 @@ function drawChart(box,pts,o){
   o=o||{}; box.innerHTML="";
   if(!pts||pts.length<2){ box.innerHTML='<div class="cnote" style="padding:30px 0;text-align:center">אין מספיק נתונים לטווח הזה</div>'; return; }
   var W=Math.max(220,box.clientWidth||320), H=o.h||150, L=52, R=8, T=10, B=22;
-  var ys=pts.map(function(q){return q[1];}), lo=Math.min.apply(null,ys.concat(o.lo||[],o.sub||[])), hi=Math.max.apply(null,ys.concat(o.hi||[]));
+  var ys=pts.map(function(q){return q[1];}), lo=Math.min.apply(null,ys.concat(o.lo||[],o.sub||[],o.cmp||[])), hi=Math.max.apply(null,ys.concat(o.hi||[],o.cmp||[]));
   if(hi-lo<Math.abs(hi)*0.002){ var m=(hi+lo)/2, e=Math.max(1,Math.abs(m)*0.002); lo=m-e; hi=m+e; }
   var padv=(hi-lo)*0.08; lo-=padv; hi+=padv;
   var x0=pts[0][0], x1=pts[pts.length-1][0];
@@ -599,7 +614,9 @@ function drawChart(box,pts,o){
     for(var k=pts.length-1;k>=0;k--) bd+="L"+X(pts[k][0]).toFixed(1)+","+Y(o.lo[k]).toFixed(1);
     g+='<path d="'+bd+'Z" fill="'+col+'" fill-opacity=".16"/>'; }
   else g+='<path d="'+line+'L'+X(x1).toFixed(1)+','+(H-B)+'L'+L+','+(H-B)+'Z" fill="url(#'+id+')"/>';
-  g+='<path d="'+line+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+  g+='<path d="'+line+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"'+(o.cmp?' stroke-dasharray="6 5"':'')+'/>';
+  if(o.cmp){ g+='<path d="'+pts.map(function(q,i){ return (i?"L":"M")+X(q[0]).toFixed(1)+","+Y(o.cmp[i]).toFixed(1); }).join("")+'" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/>';
+    pts.forEach(function(q,i){ g+='<circle cx="'+X(q[0]).toFixed(1)+'" cy="'+Y(o.cmp[i]).toFixed(1)+'" r="3" fill="#fff"/>'; }); }
   g+='<circle cx="'+X(x1).toFixed(1)+'" cy="'+Y(ys[ys.length-1]).toFixed(1)+'" r="4" fill="'+col+'" stroke="#1e1b4b" stroke-width="2"/>';
   g+='<g id="'+id+'h" style="display:none"><line y1="'+T+'" y2="'+(H-B)+'" stroke="#fff" stroke-opacity=".6"/><circle r="5" fill="'+col+'" stroke="#1e1b4b" stroke-width="2"/></g></svg>';
   box.innerHTML=g+'<div class="tip" hidden></div>';
@@ -611,7 +628,7 @@ function drawChart(box,pts,o){
     hov.style.display=""; hov.querySelector("line").setAttribute("x1",px); hov.querySelector("line").setAttribute("x2",px);
     hov.querySelector("circle").setAttribute("cx",px); hov.querySelector("circle").setAttribute("cy",py);
     var ch=base?q[1]/base-1:0;
-    tip.innerHTML='<b class="num">'+ils(q[1])+'</b>'+dShort(q[0])+' · <span class="num '+(ch>=0?"up":"down")+'">'+pctStr(ch)+'</span>'+(o.sub?'<br>נזיל <span class="num">'+shortIls(o.sub[best])+'</span> · לא נזיל <span class="num">'+shortIls(q[1]-o.sub[best])+'</span>':'');
+    tip.innerHTML='<b class="num">'+ils(q[1])+'</b>'+dShort(q[0])+' · <span class="num '+(ch>=0?"up":"down")+'">'+pctStr(ch)+'</span>'+(o.cmp?'<br>בפועל <span class="num">'+ils(o.cmp[best])+'</span>':'')+(o.lo&&!o.sub?'<br><span class="num">'+shortIls(o.lo[best])+' – '+shortIls(o.hi[best])+'</span>':'')+(o.sub?'<br>נזיל <span class="num">'+shortIls(o.sub[best])+'</span> · לא נזיל <span class="num">'+shortIls(q[1]-o.sub[best])+'</span>':'');
     tip.hidden=false; var lx=px/W*rc.width; tip.style.left=Math.min(Math.max(lx,60),rc.width-60)+"px"; tip.style.top="0px";
   }
   svg.addEventListener("pointermove",move); svg.addEventListener("pointerdown",move);
@@ -664,7 +681,6 @@ $("customL").addEventListener("click",function(){ if(CUSTOM&&RANGE!=="custom"){ 
    Pension & funds: today's value, growing at the yearly return measured from our own history
    (deposits removed, so it is investment return only), plus the monthly deposits seen in the last year.
    עו״ש stays as it is. Nominal shekels, before tax and fees. */
-var FC=null, FCY=+(lsGet("hon-fc-y")||10), FC_BAND=3;
 function histPension(){
   var G=PEN&&PEN.growth; if(!G||!G.dates||G.dates.length<30) return {ret:5,dep:0,years:0};
   var n=G.dates.length, V=[], D=[];
@@ -680,51 +696,156 @@ function histPension(){
     dep+=(p.dep[j]-p.dep[k])/12; });
   return {ret:Math.round(ret*10)/10, dep:Math.round(dep/100)*100, years:years};
 }
+var FC=null, FCY=+(lsGet("hon-fc-y")||10), FC_BAND=3, FCV="all", FC_YEARS=[1,2,3,5,10];
+if(FC_YEARS.indexOf(FCY)<0) FCY=10;
+function todayStr(){ return new Date().toLocaleDateString("sv-SE",{timeZone:"Asia/Jerusalem"}); }
+function yLabel(y){ return y===1?"שנה":y===2?"שנתיים":y+" שנים"; }
+function monthHe(ym){ try{ return new Date(ym+"-15T00:00:00Z").toLocaleDateString("he-IL",{month:"long",year:"numeric",timeZone:"UTC"}); }catch(e){ return ym; } }
 function fcLoad(){
   var h=histPension(), saved={}; try{ saved=JSON.parse(lsGet("hon-fc")||"{}")||{}; }catch(e){}
-  FC={rate:saved.rate!=null?saved.rate:4, save:saved.save!=null?saved.save:10000, pen:saved.pen!=null?saved.pen:h.ret, penDep:saved.penDep!=null?saved.penDep:h.dep, hist:h};
-  $("fcRate").value=FC.rate; $("fcSave").value=Math.round(FC.save).toLocaleString("en-US"); $("fcPen").value=FC.pen; $("fcPenDep").value=Math.round(FC.penDep).toLocaleString("en-US");
+  FC={rate:saved.rate!=null?saved.rate:4, save:saved.save!=null?saved.save:10000, saveStart:/^\d{4}-\d{2}$/.test(saved.saveStart||"")?saved.saveStart:"2027-02",
+      pen:saved.pen!=null?saved.pen:h.ret, penDep:saved.penDep!=null?saved.penDep:h.dep, hist:h};
+  fcFill();
 }
-function project(penRate,months){
-  var amount=+CFG.amount||3700000, osh=oshIls()||0, ps=penSplit(), penL=ps.liq, pen=PEN.family.total-ps.liq, sav=0, out=[];
-  var md=Math.pow(1+FC.rate/100,1/12), mp=Math.pow(1+penRate/100,1/12);
+function fcFill(){
+  $("fcRate").value=FC.rate; $("fcSave").value=Math.round(FC.save).toLocaleString("en-US"); $("fcStart").value=FC.saveStart;
+  $("fcPen").value=FC.pen; $("fcPenDep").value=Math.round(FC.penDep).toLocaleString("en-US");
+}
+function fcParams(){ return {rate:FC.rate, save:FC.save, saveStart:FC.saveStart, pen:FC.pen, penDep:FC.penDep}; }
+// P: assumptions. S: starting point {date, dep, osh, penL (open funds), penI (pension & closed funds)}.
+function projectFrom(P,S,penRate,months){
+  var y0=+S.date.slice(0,4), m0=+S.date.slice(5,7)-1, first=P.saveStart?(+P.saveStart.slice(0,4))*12+(+P.saveStart.slice(5,7)-1):-1e9;
+  var md=Math.pow(1+P.rate/100,1/12), mp=Math.pow(1+penRate/100,1/12), sav=0, penL=S.penL, pen=S.penI, out=[];
   for(var m=0;m<=months;m++){
-    if(m>0){ sav=sav*md+FC.save; pen=pen*mp+FC.penDep; penL=penL*mp; }
-    var dep=amount*Math.pow(md,m);
-    var liq=dep+sav+osh+penL;
+    if(m>0){ sav=sav*md+((y0*12+m0+m)>=first?P.save:0); pen=pen*mp+P.penDep; penL=penL*mp; }
+    var liq=S.dep*Math.pow(md,m)+sav+S.osh+penL;
     out.push({m:m, liq:liq, ill:pen, total:liq+pen});
   }
   return out;
+}
+/* Reality today. The deposit is its amount plus interest at its own rate (both from the deposit page) since the forecast was saved. */
+function actualNow(){
+  var a=depositAsset(), amount=+CFG.amount||3700000, since=TRK&&TRK.base?TRK.base.date:todayStr(), ps=penSplit();
+  var dep=amount*Math.pow(1+(+(a&&a.rate)||0)/100, Math.max(0,days(since,todayStr()))/365), osh=oshIls()||0, penI=PEN.family.total-ps.liq;
+  return {date:todayStr(), dep:dep, osh:osh, penL:ps.liq, penI:penI, liq:dep+osh+ps.liq, ill:penI, total:dep+osh+ps.liq+penI};
 }
 function drawForecast(){
   var sec=$("fc"); if($("home").hidden) return;
   if(!CFG||!PEN||!PEN.family||oshIls()==null){ sec.hidden=true; return; }
   sec.hidden=false; if(!FC) fcLoad();
   document.querySelectorAll("#fcH button").forEach(function(b){ b.classList.toggle("on",+b.getAttribute("data-y")===FCY); });
-  var M=FCY*12, mid=project(FC.pen,M), lo=project(FC.pen-FC_BAND,M), hi=project(FC.pen+FC_BAND,M);
-  var now=new Date(), t=function(m){ return Date.UTC(now.getFullYear(),now.getMonth()+m,now.getDate()); };
-  var pts=mid.map(function(x){ return [t(x.m),x.total]; });
+  var P=fcParams(), S=actualNow(), mid=projectFrom(P,S,P.pen,120), lo=projectFrom(P,S,P.pen-FC_BAND,120), hi=projectFrom(P,S,P.pen+FC_BAND,120);
+  var M=FCY*12, now=new Date(), t=function(m){ return Date.UTC(now.getFullYear(),now.getMonth()+m,now.getDate()); };
+  var key=FCV==="liq"?"liq":FCV==="ill"?"ill":"total", cut=function(a){ return a.slice(0,M+1).map(function(x){ return x[key]; }); };
+  var pts=mid.slice(0,M+1).map(function(x){ return [t(x.m),x[key]]; });
   var end=mid[M], start=mid[0].total;
-  $("fcChg").innerHTML='בעוד '+FCY+' שנים: <b class="num up">'+ils(end.total)+'</b> <span class="num">(×'+(end.total/start).toFixed(2)+')</span> · טווח <span class="num">'+shortIls(lo[M].total)+' – '+shortIls(hi[M].total)+'</span>'+
-    '<div class="fleg"><span><i style="background:#34d399"></i>הון נזיל <b class="num">'+ils(end.liq)+'</b></span><span><i style="background:#c084fc"></i>הון לא נזיל <b class="num">'+ils(end.ill)+'</b></span><span><i style="background:#fde68a"></i>סה״כ</span></div>';
-  drawChart($("fcChart"),pts,{h:210,color:"#fde68a",lo:lo.map(function(x){return x.total;}),hi:hi.map(function(x){return x.total;}),sub:mid.map(function(x){return x.liq;}),subColor:"#34d399",topColor:"#c084fc",label:"תחזית ההון העצמי: נזיל, לא נזיל וסה״כ"});
-  var ys=[1,2,3,5,10,20,30].filter(function(y){ return y<=FCY; }).slice(-5); if(FCY===5) ys=[1,2,3,4,5];
-  $("fcCards").innerHTML=ys.map(function(y){ var x=mid[y*12];
-    return '<div class="fcard"><div class="k">בעוד '+(y===1?"שנה":y===2?"שנתיים":y+" שנים")+'</div><div class="v num">'+ils(x.total)+'</div><div class="d up num">+'+shortIls(x.total-start)+'</div>'+
+  var btn=function(v,color,label,val){ return '<button type="button" data-v="'+v+'" class="'+(FCV===v?"on":"")+'" aria-pressed="'+(FCV===v)+'"><i style="background:'+color+'"></i>'+label+' <b class="num">'+ils(val)+'</b></button>'; };
+  $("fcChg").innerHTML='בעוד '+yLabel(FCY)+': <b class="num up">'+ils(end.total)+'</b> <span class="num">(×'+(end.total/start).toFixed(2)+')</span> · טווח <span class="num">'+shortIls(lo[M].total)+' – '+shortIls(hi[M].total)+'</span>'+
+    '<div class="fleg">'+btn("all","#fde68a","הכול",end.total)+btn("liq","#34d399","הון נזיל",end.liq)+btn("ill","#c084fc","הון לא נזיל",end.ill)+'</div>'+
+    '<div class="cnote">לחיצה על "הון נזיל" או "הון לא נזיל" מציגה בגרף רק אותו.</div>';
+  var o={h:210,lo:cut(lo),hi:cut(hi)};
+  if(FCV==="liq"){ o.color="#34d399"; o.label="תחזית ההון הנזיל"; }
+  else if(FCV==="ill"){ o.color="#c084fc"; o.label="תחזית ההון הלא נזיל"; }
+  else { o.color="#fde68a"; o.sub=mid.slice(0,M+1).map(function(x){return x.liq;}); o.subColor="#34d399"; o.topColor="#c084fc"; o.label="תחזית ההון העצמי: נזיל, לא נזיל וסה״כ"; }
+  drawChart($("fcChart"),pts,o);
+  $("fcCards").innerHTML=FC_YEARS.map(function(y){ var x=mid[y*12];
+    return '<div class="fcard"><div class="k">בעוד '+yLabel(y)+'</div><div class="v num">'+ils(x.total)+'</div><div class="d up num">+'+shortIls(x.total-start)+'</div>'+
       '<div class="fl"><span><i style="background:#34d399"></i>נזיל</span><b class="num">'+shortIls(x.liq)+'</b></div><div class="fl"><span><i style="background:#c084fc"></i>לא נזיל</span><b class="num">'+shortIls(x.ill)+'</b></div></div>'; }).join("");
   var h=FC.hist;
-  $("fcNote").textContent="ההנחות: פיקדון של "+ils(+CFG.amount||3700000)+" בריבית "+FC.rate+"% בשנה. חסכון של "+ils(FC.save)+" בחודש שמצטרף לפיקדון באותה ריבית. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
+  $("fcNote").textContent="ההנחות: פיקדון של "+ils(S.dep)+" בריבית "+FC.rate+"% בשנה. חסכון של "+ils(FC.save)+" בחודש החל מ"+monthHe(FC.saveStart)+", שמצטרף לפיקדון באותה ריבית. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
     (h.years>0.5?" (התשואה השנתית הממוצעת שלנו ב-"+h.years.toFixed(1)+" השנים האחרונות, בלי הפקדות, הייתה "+h.ret+"%)":"")+
     (FC.penDep?", ועוד "+ils(FC.penDep)+" הפקדות בחודש כמו בשנה האחרונה":"")+". עו״ש נשאר כמו היום. הון נזיל: הפיקדון, החסכון החודשי, העו״ש וקרנות ההשתלמות שכבר פתוחות. הון לא נזיל: הפנסיה, הקופות שעוד סגורות וההפקדות החדשות לפנסיה (קופה שתיפתח בעתיד נשארת בתחזית בצד הלא נזיל). הרצועה מסביב לקו מראה מה קורה אם תשואת הפנסיה גבוהה או נמוכה ב-"+FC_BAND+" נקודות אחוז. הסכומים נומינליים, לפני מס ודמי ניהול, וזו הערכה בלבד: תשואות העבר לא מבטיחות את העתיד.";
+  drawCompare();
 }
 $("fcH").addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return; FCY=+b.getAttribute("data-y"); lsSet("hon-fc-y",String(FCY)); drawForecast(); });
-["fcRate","fcSave","fcPen","fcPenDep"].forEach(function(id){ $(id).addEventListener("change",function(){
+$("fcChg").addEventListener("click",function(e){ var b=e.target.closest("button[data-v]"); if(!b) return; var v=b.getAttribute("data-v"); FCV=(v===FCV&&v!=="all")?"all":v; drawForecast(); });
+["fcRate","fcSave","fcStart","fcPen","fcPenDep"].forEach(function(id){ $(id).addEventListener("change",function(){
   var n=function(i){ var x=parseFloat(String($(i).value).replace(/[,₪%\s]/g,"")); return isFinite(x)?x:null; };
-  var a=n("fcRate"), b=n("fcSave"), c=n("fcPen"), d=n("fcPenDep");
+  var a=n("fcRate"), b=n("fcSave"), c=n("fcPen"), d=n("fcPenDep"), st=$("fcStart").value;
   if(a!=null) FC.rate=Math.min(30,Math.max(-10,a)); if(b!=null) FC.save=b; if(c!=null) FC.pen=Math.min(30,Math.max(-10,c)); if(d!=null) FC.penDep=d;
-  lsSet("hon-fc",JSON.stringify({rate:FC.rate,save:FC.save,pen:FC.pen,penDep:FC.penDep}));
-  $("fcSave").value=Math.round(FC.save).toLocaleString("en-US"); $("fcPenDep").value=Math.round(FC.penDep).toLocaleString("en-US"); $("fcRate").value=FC.rate; $("fcPen").value=FC.pen;
-  drawForecast(); }); });
+  if(/^\d{4}-\d{2}$/.test(st)) FC.saveStart=st;
+  lsSet("hon-fc",JSON.stringify(fcParams())); fcFill(); drawForecast(); }); });
+
+/* ---------- forecast vs reality ----------
+   The forecast is frozen on the day it is saved (assumptions + starting values). Every later visit compares
+   what it predicted for that day with what there is, and once a month the real numbers are logged.
+   Kept encrypted next to the עו״ש file; without a GitHub token it stays on this device. */
+var TRK=null, TRK_STATE="loading", TRK_WHERE="", trkSha=null, TRK_PATH="hon/track.enc.json", trkT=null, trkArm=false;
+function loadTrack(){
+  var local=null; try{ local=JSON.parse(lsGet("hon-track-local")||"null"); }catch(e){}
+  var remote=token()
+    ? gh("/contents/"+TRK_PATH+"?ref=main").then(function(r){ if(r.status===404) return {st:"none"}; if(!r.ok) throw 0;
+        return r.json().then(function(j){ trkSha=j.sha; return {st:"ok",enc:JSON.parse(unb64utf(j.content))}; }); })
+    : fetch("https://raw.githubusercontent.com/"+OWNER+"/"+REPO+"/main/"+TRK_PATH+"?t="+Date.now(),{cache:"no-store"}).then(function(r){
+        if(r.status===404) return {st:"none"}; if(!r.ok) throw 0; return r.json().then(function(e){ return {st:"ok",enc:e}; }); });
+  return remote.catch(function(){ return {st:"unknown"}; }).then(function(res){
+    var encs=[[res.enc,"gh"],[local,"local"]].filter(function(x){ return x[0]; });
+    return Promise.all(encs.map(function(x){ return decrypt(KEY,x[0]).then(function(v){ if(v) v._w=x[1]; return v; }).catch(function(){ return null; }); })).then(function(vals){
+      vals=vals.filter(function(v){ return v&&v.base&&v.base.s&&v.base.p; });
+      vals.sort(function(a,b){ return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
+      TRK=vals[0]||null; TRK_WHERE=TRK?TRK._w:""; if(TRK) delete TRK._w; TRK_STATE=res.st;
+    });
+  });
+}
+function saveTrack(){
+  TRK.updatedAt=new Date().toISOString();
+  return encrypt(KEY,TRK).then(function(enc){
+    var text=JSON.stringify(enc)+"\n", keepLocal=function(){ lsSet("hon-track-local",JSON.stringify(enc)); TRK_WHERE="local"; };
+    if(!token()){ keepLocal(); return; }
+    var getSha=trkSha?Promise.resolve(trkSha):gh("/contents/"+TRK_PATH+"?ref=main").then(function(r){ return r.ok?r.json().then(function(j){return j.sha;}):null; });
+    return getSha.then(function(sha){ var body={message:"תחזית מול מציאות (מוצפן)",content:b64utf(text),branch:"main"}; if(sha) body.sha=sha;
+      return gh("/contents/"+TRK_PATH,{method:"PUT",body:body}); }).then(function(r){ if(!r.ok) throw 0;
+      return r.json().then(function(j){ trkSha=j.content.sha; lsSet("hon-track-local",null); TRK_WHERE="gh"; }); }).catch(keepLocal);
+  }).then(function(){ drawCompare(); });
+}
+function saveTrackSoon(){ clearTimeout(trkT); trkT=setTimeout(saveTrack,1500); }
+function newBase(){ var a=actualNow(), amount=+CFG.amount||3700000;
+  return {date:todayStr(), p:fcParams(), s:{date:todayStr(), dep:amount, osh:a.osh, penL:a.penL, penI:a.penI}}; }
+function forecastAt(base,date){
+  var mo=Math.max(0,days(base.date,date))/30.4375, arr=projectFrom(base.p,base.s,base.p.pen,Math.ceil(mo)+1), i=Math.floor(mo), f=mo-i, a=arr[i], b=arr[i+1];
+  return {liq:a.liq+(b.liq-a.liq)*f, ill:a.ill+(b.ill-a.ill)*f, total:a.total+(b.total-a.total)*f};
+}
+function gapHtml(act,est){ var g=act-est, c=g>=0?"up":"down"; return '<b class="num '+c+'">'+(g>=0?"+":"-")+ils(Math.abs(g))+'<br>'+pctStr(est?g/est:0)+'</b>'; }
+function drawCompare(){
+  var box=$("cmp"); if(!box||!FC||!CFG||!PEN||oshIls()==null) return;
+  if(TRK_STATE==="loading"){ box.innerHTML='<div class="cnote">טוען את התחזית השמורה…</div>'; return; }
+  if(!TRK){
+    if(TRK_STATE==="unknown"){ box.innerHTML='<div class="cnote">לא הצלחתי לבדוק אם יש תחזית שמורה (בעיית רשת). נסה לרענן.</div>'; return; }
+    TRK={v:1, base:newBase(), log:[]}; saveTrack();
+  }
+  var T=todayStr(), B=TRK.base, sameDay=B.date===T;
+  if(sameDay){ // still the day the forecast was made: keep it in step with edits
+    var nb=newBase(); if(JSON.stringify(nb)!==JSON.stringify(B)){ TRK.base=B=nb; saveTrackSoon(); }
+  } else if(!trkArm && B.date.slice(0,7)!==T.slice(0,7) && !(TRK.log||[]).some(function(x){ return x.d.slice(0,7)===T.slice(0,7); })){
+    var a0=actualNow(); TRK.log=(TRK.log||[]).concat([{d:T, liq:Math.round(a0.liq), ill:Math.round(a0.ill)}]); saveTrackSoon();
+  }
+  var act=actualNow(), est=forecastAt(B,T);
+  var h='<div class="cmp3"><div class="fact"><div class="k">הערכנו להיום</div><div class="v num">'+ils(est.total)+'</div></div>'+
+        '<div class="fact"><div class="k">יש בפועל</div><div class="v num">'+ils(act.total)+'</div></div>'+
+        '<div class="fact"><div class="k">הפער</div><div class="v">'+gapHtml(act.total,est.total)+'</div></div></div>';
+  h+='<div style="overflow-x:auto"><table class="ptbl"><thead><tr><th></th><th>הערכנו</th><th>בפועל</th><th>פער</th></tr></thead><tbody>'+
+     '<tr><td>הון נזיל</td><td class="num">'+ils(est.liq)+'</td><td class="num">'+ils(act.liq)+'</td><td>'+gapHtml(act.liq,est.liq)+'</td></tr>'+
+     '<tr><td>הון לא נזיל</td><td class="num">'+ils(est.ill)+'</td><td class="num">'+ils(act.ill)+'</td><td>'+gapHtml(act.ill,est.ill)+'</td></tr></tbody></table></div>';
+  var rows=[{d:B.date, liq:B.s.dep+B.s.osh+B.s.penL, ill:B.s.penI}].concat(TRK.log||[]);
+  if(rows[rows.length-1].d!==T) rows.push({d:T, liq:act.liq, ill:act.ill});
+  if(rows.length>=3||days(B.date,T)>=20){
+    var ests=rows.map(function(x){ return forecastAt(B,x.d).total; });
+    h+='<div class="fleg" style="margin:14px 0 30px"><span><i style="background:#fde68a"></i>הערכנו</span><span><i style="background:#fff"></i>בפועל</span></div><div class="chart" id="cmpChart"></div>';
+    h+='<div style="overflow-x:auto;margin-top:10px"><table class="ptbl"><thead><tr><th>תאריך</th><th>הערכנו</th><th>בפועל</th><th>פער</th></tr></thead><tbody>'+
+       rows.slice(1).reverse().map(function(x){ var e=forecastAt(B,x.d).total, a=x.liq+x.ill; return '<tr><td class="num">'+fmtDate(x.d)+'</td><td class="num">'+ils(e)+'</td><td class="num">'+ils(a)+'</td><td>'+gapHtml(a,e)+'</td></tr>'; }).join("")+'</tbody></table></div>';
+  }
+  h+='<div class="cnote" style="margin-top:10px;line-height:1.6">'+(sameDay
+      ?'התחזית נשמרה היום. מעכשיו, בכל כניסה תראה כאן כמה הערכנו לאותו יום, כמה יש בפועל ומה הפער, ופעם בחודש המספרים האמיתיים נרשמים לטבלה. שינוי בהנחות היום עדיין מעדכן את התחזית השמורה.'
+      :'התחזית נשמרה ב-'+fmtDate(B.date)+' עם ההנחות של אותו יום: ריבית '+B.p.rate+'%, חסכון '+ils(B.p.save)+' בחודש החל מ'+monthHe(B.p.saveStart)+', תשואת פנסיה '+B.p.pen+'%. שינוי בהנחות למעלה משנה את הגרף אבל לא את התחזית השמורה.')+
+     ' הפיקדון במציאות מחושב לפי הסכום והריבית שבדף הפיקדון, אז כדאי לעדכן שם ובעו״ש כשמשהו משתנה. '+
+     (TRK_WHERE==="gh"?'נשמר לכל המכשירים.':'נשמר רק במכשיר הזה; כדי שיישמר לכל המכשירים צריך לחבר GitHub (בעריכת העו״ש).')+'</div>'+
+     (sameDay?'':'<button type="button" class="ghost" id="cmpReset" style="margin-top:10px">שמור תחזית חדשה מהיום</button>');
+  box.innerHTML=h;
+  var cc=$("cmpChart"); if(cc) drawChart(cc,rows.map(function(x,i){ return [Date.parse(x.d),ests[i]]; }),{h:180,color:"#fde68a",cmp:rows.map(function(x){ return x.liq+x.ill; }),label:"תחזית מול מציאות"});
+  var rb=$("cmpReset"); if(rb) rb.addEventListener("click",function(){
+    if(rb.getAttribute("data-sure")!=="1"){ rb.setAttribute("data-sure","1"); rb.textContent="בטוח? התחזית הקודמת וההשוואות יימחקו. לחץ שוב לאישור"; return; }
+    TRK={v:1, base:newBase(), log:[]}; saveTrack(); });
+}
 
 /* ---------- deposit page ---------- */
 function drawDeposit(){
