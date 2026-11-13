@@ -162,7 +162,7 @@ button{font:inherit;cursor:pointer}
 .ptbl .num{text-align:right}
 .fc h3{font-size:19px;font-weight:700;margin:0 0 2px}
 .fc .sub{font-size:13px;color:#c7d2fe;margin-bottom:12px}
-.fcin{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.fcin{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}
 @media (max-width:760px){.fcin{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .fcin label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:#c7d2fe;background:#ffffff10;border:1px solid #ffffff22;border-radius:16px;padding:10px 12px}
 .fcin input{width:100%;border:0;border-bottom:2px solid #ffffff44;background:transparent;color:#fff;font:inherit;font-size:18px;font-weight:700;padding:2px 0;outline:none;direction:ltr;text-align:right}
@@ -296,20 +296,15 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
       <span class="s" id="s-pen">שחר ולוטם</span>
     </button>
 
-    <a class="tile exp" id="t-exp" href="https://claude.ai/artifact/KjdtU12DXeTkDVRq33qYRk" target="_blank" rel="noopener" style="text-decoration:none">
-      <span class="pill">פתח ↗</span>
+    <div class="tile exp" id="t-exp" role="group">
+      <button class="edit" id="editExp" type="button" aria-label="עריכת סכום ההוצאות"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
       <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></span>
-      <span class="t">הוצאות</span>
-      <span class="a" style="font-size:19px">הוצאות חודשיות קבועות</span>
-      <span class="s">לא נכלל בסה״כ</span>
-    </a>
+      <span class="t">הוצאות חודשיות קבועות</span>
+      <span class="a num" id="v-exp">—</span>
+      <a class="s" id="expLink" href="https://claude.ai/artifact/KjdtU12DXeTkDVRq33qYRk" target="_blank" rel="noopener" style="color:#fff;font-weight:600">לדשבורד ההוצאות ↗ · לא נכלל בסה״כ</a>
+    </div>
   </section>
 
-  <nav class="links" aria-label="הדשבורדים שלי">
-    <a href="../../pension-dashboard/">החיסכון הפנסיוני של שחר ולוטם ←</a>
-    <a href="../">חסכונות ←</a>
-    <a href="https://claude.ai/artifact/KjdtU12DXeTkDVRq33qYRk" target="_blank" rel="noopener">הוצאות חודשיות קבועות ↗</a>
-  </nav>
   <section class="panel fc" id="attr" hidden>
     <h3>מאיפה הגיע השינוי</h3>
     <div class="sub">לפי הטווח שנבחר בגרף למעלה (חודש, חצי שנה, שנה או תאריך)</div>
@@ -327,11 +322,12 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     </div>
     <div class="fcin">
       <label>חסכון חודשי (₪)<input id="fcSave" inputmode="decimal" autocomplete="off"></label>
-      <label>החסכון מתחיל בחודש<input id="fcStart" type="month" placeholder="2027-02"></label>
+      <label>שחר מתחיל לעבוד והחסכון מתחיל בחודש<input id="fcStart" type="month" placeholder="2027-02"></label>
       <label>תשואת פנסיה וקרנות (% בשנה)<input id="fcPen" inputmode="decimal" autocomplete="off"></label>
-      <label>כל ההפקדות החודשיות לפנסיה ולקרנות (₪)<input id="fcPenDep" inputmode="decimal" autocomplete="off"></label>
+      <label>הפקדות של לוטם לפנסיה ולקרנות (₪ בחודש)<input id="fcDepA" inputmode="decimal" autocomplete="off"></label>
+      <label>הפקדות של שחר, מתחילת העבודה (₪ בחודש)<input id="fcDepB" inputmode="decimal" autocomplete="off"></label>
     </div>
-    <details class="depinfo"><summary>מה כלול בהפקדות החודשיות?</summary><div id="fcDepInfo" class="cnote" style="line-height:1.6;margin-top:6px"></div></details>
+    <details class="depinfo"><summary>איך חושבו ההפקדות לפנסיה ולקרנות?</summary><div id="fcDepInfo" class="cnote" style="line-height:1.6;margin-top:6px"></div></details>
     <div class="chg" id="fcChg"></div>
     <div class="chart" id="fcChart" style="margin-top:34px"></div>
     <div class="fcards" id="fcCards"></div>
@@ -361,20 +357,13 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     <div class="fact"><div class="k">תאריך התחלה</div><div class="v num" id="d-asof">—</div></div>
   </div>
   <div class="panel">
-    <h3>קדימה: כמה יהיה בפיקדון</h3>
+    <h3>קדימה: כמה יהיה בפיקדון (נטו, אחרי מס)</h3>
     <div class="rng" id="fchips" role="group" aria-label="טווח קדימה">
       <button type="button" data-y="1">שנה</button><button type="button" data-y="2">שנתיים</button><button type="button" data-y="3">3 שנים</button><button type="button" data-y="5">5 שנים</button><button type="button" data-y="10">10 שנים</button>
     </div>
     <div class="chg" id="d-fchg"></div>
     <div class="chart" id="depF" style="margin-top:34px"></div>
     <div style="overflow-x:auto;margin-top:10px"><table class="ptbl" id="d-ftbl"></table></div>
-  </div>
-  <div class="panel">
-    <h3>אחורה: אילו הפיקדון היה קיים כבר אז</h3>
-    <div class="chips" id="chips" style="margin-top:0"></div>
-    <div class="chg" id="d-chg"></div>
-    <div class="chart" id="depChart" style="margin-top:34px"></div>
-    <div style="overflow-x:auto;margin-top:10px"><table class="ptbl" id="d-tbl"></table></div>
   </div>
   <div class="foot" id="d-note"></div>
 </main>
@@ -409,6 +398,15 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     <p class="dlgnote" id="sErr" style="color:#b91c1c;min-height:18px"></p>
     <p class="dlgnote">עושים את זה פעם אחת. הטוקן נשמר מוצפן בסיסמה שלך, כך שכל מכשיר שנכנס עם הסיסמה מתחבר לבד. הטוקן נותן גישה רק למאגר הזה, ותוקפו עד שנה: כשהוא יפוג תופיע כאן אזהרה ותצטרך ליצור חדש.</p>
     <div class="acts"><button class="ok" value="ok" id="sGo" style="background:linear-gradient(90deg,#6366f1,#8b5cf6)">חבר</button><button class="no" value="cancel" formnovalidate>סגור</button></div>
+  </form>
+</dialog>
+
+<dialog id="edlg">
+  <form method="dialog" id="edf">
+    <h3>הוצאות חודשיות קבועות</h3>
+    <p>הסה״כ לחודש מדשבורד ההוצאות. הוא לא מתעדכן לבד: אם שינית שם משהו, עדכן כאן.</p>
+    <input class="inp num" id="expIn" inputmode="decimal" autocomplete="off" style="border-color:#fecdd3">
+    <div class="acts"><button class="ok" value="ok" style="background:linear-gradient(90deg,#f43f5e,#fb7185)">שמור</button><button class="no" value="cancel" formnovalidate>ביטול</button></div>
   </form>
 </dialog>
 
@@ -600,9 +598,12 @@ function depositAsset(){
 }
 function depAmount(){ return +CFG.amount||3700000; }
 function depRate(){ var a=depositAsset(); return a?(+a.rate||0):0; }
+var TAX=0.15; // tax on the interest of a shekel deposit
+function depNet(){ return Math.round(depRate()*(1-TAX)*10000)/10000; }
+function rateTxt(){ return depRate().toFixed(2)+"% ברוטו · "+depNet().toFixed(2)+"% נטו"; }
 function depStart(){ var a=depositAsset(); return a&&/^\d{4}-\d{2}-\d{2}$/.test(a.start||"")?a.start:todayStr(); }
 // The real deposit: the amount until the day it started, then compound interest at its yearly rate.
-function depAtDate(d){ return depositAsset()?depAmount()*Math.pow(1+depRate()/100,Math.max(0,days(depStart(),d))/365):null; }
+function depAtDate(d){ return depositAsset()?depAmount()*Math.pow(1+depNet()/100,Math.max(0,days(depStart(),d))/365):null; }
 function depNow(){ return CFG?depAtDate(todayStr()):null; }
 // "What if" for the deposit page: the amount deposited at the start of a past period, at today's rate.
 function pastDate(p){
@@ -619,7 +620,7 @@ function norm(o){ // older records had a single shekel amount
   if(!o) return null;
   if(o.il==null && o.us==null && isFinite(+o.amount)) return {il:+o.amount,us:OSH_DEFAULT.us,updatedAt:o.updatedAt};
   if(!isFinite(+o.il)||!isFinite(+o.us)) return null;
-  return {il:+o.il,us:+o.us,updatedAt:o.updatedAt};
+  return {il:+o.il,us:+o.us,exp:isFinite(+o.exp)&&o.exp!=null?+o.exp:null,updatedAt:o.updatedAt};
 }
 function oshIls(){ if(!OSH) return null; var r=usdRate(); return r?OSH.il+OSH.us*r:null; }
 function token(){ return lsGet("gh-token")||""; }
@@ -650,7 +651,7 @@ function loadOsh(){
   });
 }
 function saveOsh(il,us){
-  var rec={il:il,us:us,updatedAt:new Date().toISOString()};
+  var rec={il:il,us:us,exp:OSH?OSH.exp:null,updatedAt:new Date().toISOString()};
   OSH=rec; render();
   return encrypt(KEY,rec).then(function(enc){
     var text=JSON.stringify(enc)+"\n";
@@ -685,6 +686,13 @@ $("df").addEventListener("submit",function(e){
   if(!isFinite(us)){ e.preventDefault(); $("oshUs").focus(); return; }
   saveOsh(il,us);
 });
+
+/* ---------- expenses (shown only, never added to any total) ---------- */
+$("t-exp").addEventListener("click",function(e){ if(e.target.closest("#editExp")||e.target.closest("a")) return; window.open($("expLink").href,"_blank","noopener"); });
+$("editExp").addEventListener("click",function(){ var t=$("v-exp").textContent.replace(/[^\d]/g,""); $("expIn").value=t?(+t).toLocaleString("en-US"):""; $("edlg").showModal(); setTimeout(function(){ $("expIn").select(); },50); });
+$("edf").addEventListener("submit",function(e){ var btn=e.submitter; if(btn&&btn.value==="cancel") return;
+  var v=parseFloat(String($("expIn").value).replace(/[,₪\s]/g,"")); if(!isFinite(v)||!OSH){ e.preventDefault(); return; }
+  OSH.exp=v; saveOsh(OSH.il,OSH.us); });
 
 /* ---------- pension ---------- */
 $("t-pen").addEventListener("click",function(){ location.href=PEN_URL; });
@@ -819,29 +827,43 @@ function todayStr(){ return new Date().toLocaleDateString("sv-SE",{timeZone:"Asi
 function yLabel(y){ return y===1?"שנה":y===2?"שנתיים":y+" שנים"; }
 function monthHe(ym){ try{ return new Date(ym+"-15T00:00:00Z").toLocaleDateString("he-IL",{month:"long",year:"numeric",timeZone:"UTC"}); }catch(e){ return ym; } }
 function num(id){ var x=parseFloat(String($(id).value).replace(/[,₪%\s]/g,"")); return isFinite(x)?x:null; }
+// Deposits by law for a salaried employee: pension 6% employee + 6.5% employer + 6% severance (the legal minimum,
+// on the full salary), and keren hishtalmut 2.5% + 7.5% up to the salary ceiling of 15,712.
+var PENSION_PCT=0.185, HISH_PCT=0.10, HISH_CEIL=15712;
+function depFromSalary(sal){ return Math.round(sal*PENSION_PCT+Math.min(sal,HISH_CEIL)*HISH_PCT); }
+function personDeps(){ // per person: what the pension dashboard records now, and what the salary implies
+  var out={}, D=PEN.deposits, S=(PEN.portal&&PEN.portal.salaries)||{};
+  (PEN.people||[]).forEach(function(p){ out[p.name]={data:0,salary:S[p.name]||0,calc:S[p.name]?depFromSalary(S[p.name]):0}; });
+  if(D&&D.items) D.items.forEach(function(x){ if(out[x.person]) out[x.person].data+=x.monthly||0; });
+  return out;
+}
+function whoIs(name){ var ks=Object.keys(personDeps()); return ks.filter(function(k){ return k.indexOf(name)>=0; })[0]||null; }
 function fcLoad(){
-  var h=histPension(), saved={}; try{ saved=JSON.parse(lsGet("hon-fc2")||"{}")||{}; }catch(e){}
-  var dataDep=PEN.deposits&&isFinite(+PEN.deposits.monthly)?+PEN.deposits.monthly:null;
-  FC={save:saved.save!=null?saved.save:10000, saveStart:/^\d{4}-\d{2}$/.test(saved.saveStart||"")?saved.saveStart:"2027-02",
-      pen:saved.pen!=null?saved.pen:h.ret, penDep:saved.penDep!=null?saved.penDep:(dataDep!=null?dataDep:h.dep), hist:h, dataDep:dataDep};
+  var h=histPension(), saved={}; try{ saved=JSON.parse(lsGet("hon-fc3")||"{}")||{}; }catch(e){}
+  var pd=personDeps(), L=pd[whoIs("לוטם")]||{data:0,calc:0}, Sh=pd[whoIs("שחר")]||{data:0,calc:0};
+  var autoA=L.calc||L.data||(h.dep||0), autoB=Sh.data>0?Sh.data:Sh.calc;
+  FC={save:saved.save!=null?saved.save:5000, saveStart:/^\d{4}-\d{2}$/.test(saved.saveStart||"")?saved.saveStart:"2027-02",
+      pen:saved.pen!=null?saved.pen:h.ret, depA:saved.depA!=null?saved.depA:autoA, depB:saved.depB!=null?saved.depB:autoB, depB0:Sh.data||0,
+      hist:h, autoA:autoA, autoB:autoB, manA:saved.depA!=null, manB:saved.depB!=null};
   fcFill();
 }
 function fcFill(){
-  $("fcSave").value=Math.round(FC.save).toLocaleString("en-US"); $("fcStart").value=FC.saveStart;
-  $("fcPen").value=FC.pen; $("fcPenDep").value=Math.round(FC.penDep).toLocaleString("en-US");
+  $("fcSave").value=Math.round(FC.save).toLocaleString("en-US"); $("fcStart").value=FC.saveStart; $("fcPen").value=FC.pen;
+  $("fcDepA").value=Math.round(FC.depA).toLocaleString("en-US"); $("fcDepB").value=Math.round(FC.depB).toLocaleString("en-US");
 }
-function fcParams(){ return {rate:depRate(), save:FC.save, saveStart:FC.saveStart, pen:FC.pen, penDep:FC.penDep}; }
+function fcParams(){ return {rate:depNet(), save:FC.save, saveStart:FC.saveStart, pen:FC.pen, depA:FC.depA, depB:FC.depB, depB0:FC.depB0}; }
 var CAT_HE={pension:"קרן פנסיה",bm:"ביטוח מנהלים",hish:"קרן השתלמות",gemel:"קופת גמל",k401:"401k",ireland:"פנסיה באירלנד"};
 function fundName(f){ return (f.kind||CAT_HE[f.category]||"קופה")+(f.provider?" · "+f.provider:"")+" ("+f.person+")"; }
 function depInfoHtml(){
-  var D=PEN.deposits;
-  if(!D||!D.items) return 'הסכום הוא הערכה לפי ההפקדות שנרשמו בדוחות השנתיים בשנה האחרונה, של שניכם יחד. פירוט לפי קופה יופיע כאן אחרי העדכון היומי הבא של דשבורד הפנסיה.';
-  var act=D.items.filter(function(x){ return x.monthly>0; }), none=D.items.filter(function(x){ return !(x.monthly>0); });
-  var h='סכום אחד של שחר ולוטם יחד, מכל הקופות: פנסיה, ביטוח מנהלים, קרנות השתלמות וגמל. הסכומים הם סך ההפקדה לקופה (עובד, מעסיק ופיצויים) כפי שהוזן בדשבורד הפנסיה או כפי שמופיע בדוח השנתי.';
-  h+='<table class="ptbl" style="margin-top:8px"><tbody>'+act.map(function(x){ return '<tr><td>'+fundName(x)+'</td><td class="num">'+ils(x.monthly)+'</td><td>'+(x.source==="monthly"?"הפקדה חודשית שהוזנה":"ממוצע חודשי לפי דוח "+String(x.source||"").replace("report:",""))+'</td></tr>'; }).join("")+
-     '<tr class="sel"><td>סה״כ בחודש</td><td class="num">'+ils(D.monthly)+'</td><td></td></tr></tbody></table>';
-  if(none.length) h+='<div style="margin-top:6px">בלי הפקדות בחישוב: '+none.map(function(x){ return fundName(x)+(x.inactive?" – לא פעילה":x.paused?" – הפקדות מושהות":" – אין נתון על הפקדות"); }).join(" · ")+'. אם באחת מהן יש הפקדות, אפשר לתקן את הסכום בשדה למעלה.</div>';
-  if(FC&&Math.round(FC.penDep)!==Math.round(D.monthly)) h+='<div style="margin-top:6px">בשדה למעלה רשום כרגע '+ils(FC.penDep)+' (שינוי ידני). <button type="button" class="ghost" id="fcDepReset">חזרה ל-'+ils(D.monthly)+'</button></div>';
+  var pd=personDeps(), kl=whoIs("לוטם"), ks=whoIs("שחר"), L=pd[kl]||{}, Sh=pd[ks]||{};
+  var line=function(nm,x){ return x.salary?'<tr><td>'+nm+'</td><td class="num">'+ils(x.salary)+'</td><td class="num">'+ils(x.salary*PENSION_PCT)+'</td><td class="num">'+ils(Math.min(x.salary,HISH_CEIL)*HISH_PCT)+'</td><td class="num">'+ils(x.calc)+'</td></tr>':''; };
+  var h='ההפקדות מחושבות מהשכר לפי המינימום שבחוק: לפנסיה 18.5% מהשכר (6% עובד, 6.5% מעסיק, 6% פיצויים), ולקרן השתלמות 10% (2.5% עובד, 7.5% מעסיק) עד תקרת שכר של '+ils(HISH_CEIL)+'. עובד ומעסיק יחד, פנסיה והשתלמות יחד.';
+  if(L.salary||Sh.salary) h+='<div style="overflow-x:auto"><table class="ptbl" style="margin-top:8px"><thead><tr><th></th><th>שכר</th><th>פנסיה</th><th>השתלמות</th><th>סה״כ בחודש</th></tr></thead><tbody>'+line("לוטם",L)+line("שחר, מ"+monthHe(FC.saveStart),Sh)+'</tbody></table></div>';
+  else h+='<div style="margin-top:6px">נתוני השכר יופיעו כאן אחרי העדכון הבא של דשבורד הפנסיה.</div>';
+  h+='<div style="margin-top:6px">מה רשום היום בדשבורד הפנסיה: לוטם '+ils(L.data||0)+' בחודש, שחר '+ils(Sh.data||0)+' בחודש. '+
+     (Sh.data>0?'בדשבורד הפנסיה כבר רשומות הפקדות של שחר, אז הן נכנסות לתחזית כבר מעכשיו.':'עד '+monthHe(FC.saveStart)+' התחזית לא מוסיפה הפקדות של שחר. ברגע שיופיעו לו הפקדות בדשבורד הפנסיה, הן יחליפו כאן את החישוב לפי השכר.')+
+     ' אם המעסיק מפקיד יותר מהמינימום (למשל 8.33% פיצויים, או השתלמות על כל השכר), אפשר לתקן את הסכומים בשדות למעלה.</div>';
+  if(FC.manA||FC.manB) h+='<div style="margin-top:6px">יש כרגע סכום שהוזן ידנית. <button type="button" class="ghost" id="fcDepReset">חזרה לחישוב האוטומטי</button></div>';
   return h;
 }
 // P: assumptions. S: starting point {date, dep, osh, penL (open funds), penI (pension & closed funds)}.
@@ -849,7 +871,8 @@ function projectFrom(P,S,penRate,months){
   var y0=+S.date.slice(0,4), m0=+S.date.slice(5,7)-1, first=P.saveStart?(+P.saveStart.slice(0,4))*12+(+P.saveStart.slice(5,7)-1):-1e9;
   var md=Math.pow(1+P.rate/100,1/12), mp=Math.pow(1+penRate/100,1/12), sav=0, penL=S.penL, pen=S.penI, out=[];
   for(var m=0;m<=months;m++){
-    if(m>0){ sav=sav*md+((y0*12+m0+m)>=first?P.save:0); pen=pen*mp+P.penDep; penL=penL*mp; }
+    if(m>0){ var on=(y0*12+m0+m)>=first;
+      sav=sav*md+(on?P.save:0); pen=pen*mp+(P.depA!=null?P.depA+(on?P.depB:(P.depB0||0)):(P.penDep||0)); penL=penL*mp; }
     var liq=S.dep*Math.pow(md,m)+sav+S.osh+penL;
     out.push({m:m, liq:liq, ill:pen, total:liq+pen});
   }
@@ -870,7 +893,7 @@ function drawForecast(){
   var pts=mid.slice(0,M+1).map(function(x){ return [t(x.m),x[key]]; });
   var end=mid[M], start=mid[0].total;
   var btn=function(v,color,label,val){ return '<button type="button" data-v="'+v+'" class="'+(FCV===v?"on":"")+'" aria-pressed="'+(FCV===v)+'"><i style="background:'+color+'"></i>'+label+' <b class="num">'+ils(val)+'</b></button>'; };
-  $("fcChg").innerHTML='בעוד '+yLabel(FCY)+': <b class="num up">'+ils(end.total)+'</b> <span class="num">(×'+(end.total/start).toFixed(2)+')</span> · טווח <span class="num">'+shortIls(lo[M].total)+' – '+shortIls(hi[M].total)+'</span>'+
+  $("fcChg").innerHTML='בעוד '+yLabel(FCY)+': <b class="num up">'+ils(end.total)+'</b> <span class="num up">('+pctStr(end.total/start-1)+')</span> · טווח <span class="num">'+shortIls(lo[M].total)+' – '+shortIls(hi[M].total)+'</span>'+
     '<div class="fleg">'+btn("all","#fde68a","הכול",end.total)+btn("liq","#34d399","הון נזיל",end.liq)+btn("ill","#c084fc","הון לא נזיל",end.ill)+'</div>';
   drawChart($("fcChart"),pts,{h:210,lo:cut(lo),hi:cut(hi),color:FCV==="liq"?"#34d399":FCV==="ill"?"#c084fc":"#fde68a",
     label:FCV==="liq"?"תחזית ההון הנזיל":FCV==="ill"?"תחזית ההון הלא נזיל":"תחזית ההון העצמי הכולל"});
@@ -879,20 +902,22 @@ function drawForecast(){
       '<div class="fl"><span><i style="background:#34d399"></i>נזיל</span><b class="num">'+shortIls(x.liq)+'</b></div><div class="fl"><span><i style="background:#c084fc"></i>לא נזיל</span><b class="num">'+shortIls(x.ill)+'</b></div></div>'; }).join("");
   $("fcDepInfo").innerHTML=depInfoHtml();
   var h=FC.hist;
-  $("fcNote").textContent="ההנחות: פיקדון של "+ils(S.dep)+" בריבית "+P.rate+"% בשנה (משנים בדף החסכון). חסכון של "+ils(FC.save)+" בחודש החל מ"+monthHe(FC.saveStart)+", שמצטרף לפיקדון באותה ריבית. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
+  $("fcNote").textContent="ההנחות: פיקדון של "+ils(S.dep)+" בריבית "+P.rate.toFixed(2)+"% נטו בשנה, אחרי 15% מס על הריבית (משנים בדף החסכון). חסכון של "+ils(FC.save)+" בחודש החל מ"+monthHe(FC.saveStart)+", שמצטרף לפיקדון באותה ריבית נטו. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
     (h.years>0.5?" (התשואה השנתית הממוצעת שלנו ב-"+h.years.toFixed(1)+" השנים האחרונות, בלי הפקדות, הייתה "+h.ret+"%)":"")+
-    (FC.penDep?", ועוד "+ils(FC.penDep)+" הפקדות בחודש":"")+". עו״ש נשאר כמו היום. הון נזיל: הפיקדון, החסכון החודשי, העו״ש וקרנות ההשתלמות שכבר פתוחות. הון לא נזיל: הפנסיה, הקופות שעוד סגורות וכל ההפקדות החדשות (קופה שתיפתח בעתיד נשארת בתחזית בצד הלא נזיל). הרצועה מסביב לקו מראה מה קורה אם תשואת הפנסיה גבוהה או נמוכה ב-"+FC_BAND+" נקודות אחוז. הסכומים נומינליים, לפני מס ודמי ניהול, וזו הערכה בלבד: תשואות העבר לא מבטיחות את העתיד.";
+    ", ועוד הפקדות של "+ils(FC.depA)+" בחודש (לוטם) ושל "+ils(FC.depB)+" בחודש (שחר, מ"+monthHe(FC.saveStart)+"). הפנסיה והקרנות מוצגות ברוטו, לפני מס ודמי ניהול. עו״ש נשאר כמו היום. הון נזיל: הפיקדון, החסכון החודשי, העו״ש וקרנות ההשתלמות שכבר פתוחות. הון לא נזיל: הפנסיה, הקופות שעוד סגורות וכל ההפקדות החדשות (קופה שתיפתח בעתיד נשארת בתחזית בצד הלא נזיל). הרצועה מסביב לקו מראה מה קורה אם תשואת הפנסיה גבוהה או נמוכה ב-"+FC_BAND+" נקודות אחוז. הסכומים נומינליים, וזו הערכה בלבד: תשואות העבר לא מבטיחות את העתיד.";
   drawCompare();
 }
 $("fcH").addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return; FCY=+b.getAttribute("data-y"); lsSet("hon-fc-y",String(FCY)); drawForecast(); });
 $("fcChg").addEventListener("click",function(e){ var b=e.target.closest("button[data-v]"); if(!b) return; var v=b.getAttribute("data-v"); FCV=(v===FCV&&v!=="all")?"all":v; drawForecast(); });
-function fcStore(){ lsSet("hon-fc2",JSON.stringify({save:FC.save,saveStart:FC.saveStart,pen:FC.pen,penDep:FC.penDep})); fcFill(); drawForecast(); }
-["fcSave","fcStart","fcPen","fcPenDep"].forEach(function(id){ $(id).addEventListener("change",function(){
-  var b=num("fcSave"), c=num("fcPen"), d=num("fcPenDep"), st=$("fcStart").value;
-  if(b!=null) FC.save=b; if(c!=null) FC.pen=Math.min(30,Math.max(-10,c)); if(d!=null) FC.penDep=d;
+function fcStore(){ var o={save:FC.save,saveStart:FC.saveStart,pen:FC.pen}; if(FC.manA) o.depA=FC.depA; if(FC.manB) o.depB=FC.depB;
+  lsSet("hon-fc3",JSON.stringify(o)); fcFill(); drawForecast(); }
+["fcSave","fcStart","fcPen","fcDepA","fcDepB"].forEach(function(id){ $(id).addEventListener("change",function(){
+  var b=num("fcSave"), c=num("fcPen"), da=num("fcDepA"), db=num("fcDepB"), st=$("fcStart").value;
+  if(b!=null) FC.save=b; if(c!=null) FC.pen=Math.min(30,Math.max(-10,c));
+  if(id==="fcDepA"&&da!=null){ FC.depA=da; FC.manA=true; } if(id==="fcDepB"&&db!=null){ FC.depB=db; FC.manB=true; }
   if(/^\d{4}-\d{2}$/.test(st)) FC.saveStart=st;
   fcStore(); }); });
-$("fcDepInfo").addEventListener("click",function(e){ if(e.target.id==="fcDepReset"&&FC.dataDep!=null){ FC.penDep=FC.dataDep; fcStore(); } });
+$("fcDepInfo").addEventListener("click",function(e){ if(e.target.id==="fcDepReset"){ FC.depA=FC.autoA; FC.depB=FC.autoB; FC.manA=FC.manB=false; fcStore(); } });
 
 /* ---------- forecast vs reality, month by month ----------
    The forecast is frozen when it is saved (assumptions + starting values). For every month that has ended, one row is
@@ -910,7 +935,7 @@ function loadTrack(){
   return remote.catch(function(){ return {st:"unknown"}; }).then(function(res){
     var encs=[[res.enc,"gh"],[local,"local"]].filter(function(x){ return x[0]; });
     return Promise.all(encs.map(function(x){ return decrypt(KEY,x[0]).then(function(v){ if(v) v._w=x[1]; return v; }).catch(function(){ return null; }); })).then(function(vals){
-      vals=vals.filter(function(v){ return v&&v.v===2&&v.base&&v.base.s&&v.base.p; });
+      vals=vals.filter(function(v){ return v&&v.v===3&&v.base&&v.base.s&&v.base.p; });
       vals.sort(function(a,b){ return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
       TRK=vals[0]||null; TRK_WHERE=TRK?TRK._w:""; if(TRK) delete TRK._w; TRK_STATE=res.st;
     });
@@ -957,7 +982,7 @@ function drawCompare(){
   var dirty=false;
   if(!TRK){
     if(TRK_STATE==="unknown"){ box.innerHTML='<div class="cnote">לא הצלחתי לבדוק אם יש תחזית שמורה (בעיית רשת). נסה לרענן.</div>'; return; }
-    TRK={v:2, base:newBase(), months:[]}; dirty=true;
+    TRK={v:3, base:newBase(), months:[]}; dirty=true;
   }
   var T=todayStr(), B=TRK.base, rows=TRK.months=TRK.months||[];
   for(var ym=B.date.slice(0,7); ym<T.slice(0,7); ym=nextYm(ym)){
@@ -979,7 +1004,7 @@ function drawCompare(){
   h+='<div class="cnote" style="margin-top:10px;line-height:1.6">'+
      (rows.length?'':'בסוף '+monthHe(curYm)+' תתווסף כאן השורה הראשונה: כמה הערכנו לסוף החודש, כמה יצא בפועל ומה הפער. ')+
      'כל חודש שמסתיים מקבל שורה משלו, והיא לא משתנה אחר כך גם אם תעדכן את החסכון או את העו״ש. אפשר לתקן שורה ידנית בכפתור ✎. השורה נוספת בכניסה הראשונה שלך אחרי סוף החודש, לפי שווי הפנסיה ביום האחרון של אותו חודש והעו״ש שרשום באותה כניסה. '+
-     'ההערכות מבוססות על התחזית שנשמרה ב-'+fmtDate(B.date)+': ריבית '+B.p.rate+'%, חסכון '+ils(B.p.save)+' בחודש החל מ'+monthHe(B.p.saveStart)+', תשואת פנסיה '+B.p.pen+'%, הפקדות '+ils(B.p.penDep)+' בחודש. '+
+     'ההערכות מבוססות על התחזית שנשמרה ב-'+fmtDate(B.date)+': ריבית נטו '+(+B.p.rate).toFixed(2)+'%, חסכון '+ils(B.p.save)+' בחודש החל מ'+monthHe(B.p.saveStart)+', תשואת פנסיה '+B.p.pen+'%, הפקדות '+ils(B.p.depA)+' בחודש (לוטם) ו-'+ils(B.p.depB)+' (שחר, מאותו חודש). '+
      (TRK_WHERE==="gh"?'נשמר לכל המכשירים.':'נשמר רק במכשיר הזה; כדי שיישמר לכל המכשירים צריך לחבר GitHub (כפתור הסנכרון בראש הדף).')+'</div>'+
      '<button type="button" class="ghost" id="cmpReset" style="margin-top:10px">'+(changed?'ההנחות השתנו: עדכן את התחזית השמורה מהיום':'שמור תחזית חדשה מהיום')+'</button>';
   box.innerHTML=h;
@@ -1049,24 +1074,15 @@ var FY=+(lsGet("hon-dep-y")||5); if(FC_YEARS.indexOf(FY)<0) FY=5;
 function drawDeposit(){
   if($("savings").hidden) return;
   var a=depositAsset(); if(!a||!DATA) return;
-  var amount=depAmount(), r=depRate()/100, now=depNow(), T=todayStr(), t0=Date.parse(T);
+  var amount=depAmount(), r=depNet()/100, now=depNow(), T=todayStr(), t0=Date.parse(T);
   // forward
   document.querySelectorAll("#fchips button").forEach(function(b){ b.classList.toggle("on",+b.getAttribute("data-y")===FY); });
   var pts=[], n=FY*12; for(var i=0;i<=n;i++) pts.push([t0+i/12*365.25*864e5, now*Math.pow(1+r,i/12)]);
   var endV=now*Math.pow(1+r,FY);
   $("d-fchg").innerHTML='בעוד '+yLabel(FY)+': <b class="num up">'+ils(endV)+'</b> · <span class="num up">+'+ils(endV-now)+' · '+pctStr(endV/now-1)+'</span>';
   drawChart($("depF"),pts,{h:200,color:"#6ee7b7",base:now,label:"הפיקדון קדימה"});
-  $("d-ftbl").innerHTML='<thead><tr><th>בעוד</th><th>שווי</th><th>ריבית שתצטבר</th><th>תשואה</th></tr></thead><tbody>'+FC_YEARS.map(function(y){ var x=now*Math.pow(1+r,y);
+  $("d-ftbl").innerHTML='<thead><tr><th>בעוד</th><th>שווי</th><th>ריבית נטו שתצטבר</th><th>תשואה נטו</th></tr></thead><tbody>'+FC_YEARS.map(function(y){ var x=now*Math.pow(1+r,y);
     return '<tr class="'+(y===FY?"sel":"")+'"><td>'+yLabel(y)+'</td><td class="num">'+ils(x)+'</td><td class="num up">+'+ils(x-now)+'</td><td class="num up">'+pctStr(x/now-1)+'</td></tr>'; }).join("")+'</tbody>';
-  // backward ("what if")
-  var start=Date.parse(pastDate(period)), end=Date.parse(DATA.asOf), bp=[];
-  for(i=0;i<=60;i++){ var t=start+(end-start)*i/60; bp.push([t,amount*Math.pow(1+r,(t-start)/864e5/365)]); }
-  var v=pastValue(period);
-  $("d-chg").innerHTML='אילו הפקדת '+ils(amount)+' לפני '+LABEL[period]+' ('+fmtDate(pastDate(period))+'), היום היו לך <b class="num up">'+ils(v)+'</b> · <span class="num up">+'+ils(v-amount)+' · '+pctStr(v/amount-1)+'</span>';
-  drawChart($("depChart"),bp,{h:200,color:"#93c5fd",base:amount,label:"הפיקדון אחורה"});
-  $("d-tbl").innerHTML='<thead><tr><th>לפני</th><th>מאז</th><th>שווי היום</th><th>תשואה</th><th>רווח</th></tr></thead><tbody>'+ORDER.filter(pastDate).map(function(p){ var x=pastValue(p);
-    return '<tr class="'+(p===period?"sel":"")+'"><td>'+LABEL[p]+'</td><td class="num">'+fmtDate(pastDate(p))+'</td><td class="num">'+ils(x)+'</td><td class="num up">'+pctStr(x/amount-1)+'</td><td class="num up">+'+ils(x-amount)+'</td></tr>'; }).join("")+'</tbody>';
-  $("chips").innerHTML=ORDER.filter(pastDate).map(function(p){ return '<button type="button" class="chip'+(p===period?" on":"")+'" data-p="'+p+'">'+LABEL[p]+'</button>'; }).join("");
 }
 $("fchips").addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return; FY=+b.getAttribute("data-y"); lsSet("hon-dep-y",String(FY)); drawDeposit(); });
 function saveConfig(next){
@@ -1121,7 +1137,7 @@ function render(){
   var dep=depNow(), osh=oshIls(), pen=PEN&&PEN.family?PEN.family.total:null, ps=penSplit();
 
   // tiles
-  if(CFG) { $("v-sav").textContent=ils(dep); $("s-sav").textContent=DEPOSIT_NAME+" · "+depRate().toFixed(2)+"%"; }
+  if(CFG) { $("v-sav").textContent=ils(dep); $("s-sav").textContent=DEPOSIT_NAME+" · "+depNet().toFixed(2)+"% נטו"; }
   if(OSH) { $("v-osh").textContent=osh==null?"…":ils(osh);
     $("b-il").textContent=ils(OSH.il); $("b-us").textContent="$"+Math.round(OSH.us).toLocaleString("en-US"); $("s-osh").textContent=OSH.updatedAt?"עודכן "+fmtDate(new Date(OSH.updatedAt).toLocaleDateString("sv-SE",{timeZone:"Asia/Jerusalem"})):"לחץ לעריכה"; }
   if(PEN) {
@@ -1130,6 +1146,8 @@ function render(){
     $("s-pen").textContent=(ppl.length?ppl.join(" · "):"שחר ולוטם")+(ps&&ps.liq?" · נזיל "+shortIls(ps.liq):"");
   }
 
+  var ex=OSH&&OSH.exp!=null?OSH.exp:(PEN&&PEN.portal&&isFinite(+PEN.portal.expensesMonthly)?+PEN.portal.expensesMonthly:null);
+  $("v-exp").textContent=ex==null?"לחץ ✎ להזנה":ils(ex);
   // liquid / not liquid
   if(CFG&&OSH&&ps&&osh!=null){
     $("liq").textContent=ils((dep||0)+(osh||0)+ps.liq);
@@ -1147,7 +1165,7 @@ function render(){
   $("legend").innerHTML=sum?parts.filter(function(p){return p[2];}).map(function(p){ return '<span><i style="background:'+COLORS[p[0]]+'"></i>'+p[1]+' <span class="num">'+(p[2]/sum<0.01?"<1":Math.round(p[2]/sum*100))+'%</span></span>'; }).join(""):"";
 
   var f=[];
-  if(CFG) f.push("פיקדון: "+ils(depAmount())+" בריבית "+depRate().toFixed(2)+"% מאז "+fmtDate(depStart()));
+  if(CFG) f.push("פיקדון: "+ils(depAmount())+" בריבית "+rateTxt()+" (אחרי 15% מס) מ-"+fmtDate(depStart()));
   if(PEN) f.push("פנסיה: הערכת שווי מ-"+fmtDate(PEN.today));
   f.push("הוצאות לא נכללות בסה״כ");
   $("foot").textContent=f.join(" · ");
@@ -1158,19 +1176,15 @@ function render(){
     var amount=+CFG.amount||3700000;
     $("d-val").textContent=ils(dep);
     var gain=dep-amount;
-    $("d-gain").innerHTML='התחיל ב-'+fmtDate(depStart())+' · נצבר עד היום <span class="num">+'+ils(gain)+'</span>';
-    $("d-rate").textContent=depRate().toFixed(2)+"%";
+    $("d-gain").innerHTML=(depStart()>todayStr()?'מתחיל ב-':'התחיל ב-')+fmtDate(depStart())+' · נצבר עד היום נטו <span class="num">+'+ils(gain)+'</span>';
+    $("d-rate").innerHTML=depNet().toFixed(2)+'% נטו<div class="k">'+depRate().toFixed(2)+'% ברוטו, פחות 15% מס על הריבית</div>';
     $("d-amt").textContent=ils(amount);
     $("d-asof").textContent=fmtDate(depStart());
-    $("d-note").textContent="ריבית דריבית שנתית, לפני מס. הסכום והריבית משותפים עם דשבורד ההשקעות, שם הפיקדון משמש כרף השוואה. בתחזית הכוללת בדף הבית מתווסף גם החסכון החודשי.";
+    $("d-note").textContent="כל המספרים נטו: ריבית דריבית שנתית אחרי 15% מס על הריבית. הסכום והריבית משותפים עם דשבורד ההשקעות, שם הפיקדון משמש כרף השוואה. בתחזית הכוללת בדף הבית מתווסף גם החסכון החודשי.";
   }
   drawEquity(); drawDeposit(); drawForecast();
 }
 function shortIls(v){ if(v==null) return ""; var a=Math.abs(v); if(a>=1e6) return "₪"+(v/1e6).toFixed(2)+"M"; if(a>=1e3) return "₪"+Math.round(v/1e3)+"K"; return ils(v); }
-$("chips").addEventListener("click",function(e){
-  var b=e.target.closest(".chip"); if(!b) return;
-  period=b.getAttribute("data-p"); lsSet("hon-period",period); drawDeposit();
-});
 
 // keep it fresh when coming back to the tab
 document.addEventListener("visibilitychange",function(){

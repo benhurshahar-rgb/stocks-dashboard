@@ -99,7 +99,10 @@ function build(){
 function members(){ return S.assets.filter(function(x){ return x.type==="stock" && !x.index; }); }
 function value(a,p){
   if(a.type==="portfolio"){ var vs=members().map(function(m){return value(m,p);}).filter(function(v){return v!=null;}); if(!vs.length) return null; return vs.reduce(function(x,y){return x+y;},0)/vs.length; }
-  if(a.type==="deposit"){ var d=days(S.periods[p],S.asOf); return S.amount*Math.pow(1+(+a.rate||0)/100,d/365); }
+  if(a.type==="deposit"){
+    // A deposit with a start date is the real one: the amount until it starts, then interest net of 15% tax.
+    if(a.start) return S.amount*Math.pow(1+(+a.rate||0)*0.85/100,Math.max(0,days(a.start,S.asOf))/365);
+    var d=days(S.periods[p],S.asOf); return S.amount*Math.pow(1+(+a.rate||0)/100,d/365); }
   var p0=a.prices&&+a.prices[p], p1=a.prices&&+a.prices.now;
   if(!p0||!p1) return null;
   var f=1; if(S.fxOn && a.currency==="USD" && S.fx[p] && S.fx.now) f=S.fx.now/S.fx[p];
@@ -174,7 +177,7 @@ function render(){
   var dep=list.filter(function(a){return a.type==="deposit";})[0], depV=dep?value(dep,P):null;
   var withV=list.filter(function(a){return value(a,P)!=null;}), lead=withV[0], last=withV[withV.length-1];
   var beat=dep?list.filter(function(a){return a.type==="stock" && !a.index && value(a,P)!=null && value(a,P)>depV;}).length:0;
-  var h='<a href="hon/" style="display:inline-block;margin-bottom:10px;font-weight:600;text-decoration:none">→ חזרה להון עצמי</a><div class="top"><div><h1>חסכונות</h1>';
+  var h='<a href="hon/" style="display:inline-block;margin-bottom:12px;background:#2563eb;color:#fff;font-weight:700;font-size:14px;padding:9px 16px;border-radius:999px;text-decoration:none">→ חזרה להון עצמי</a><div class="top"><div><h1>חסכונות</h1>';
   h+='<div class="sub">'+ils(S.amount)+' בכל אפיק · נכון ל-'+fmtDate(S.asOf)+' · דולר/שקל '+(S.fx.now?S.fx.now.toFixed(3):"—")+'</div></div>'+
     '<button class="btn '+(token?'ghost':'')+'" type="button" id="gotoGh">⚙️ '+(token?'מחובר ל-GitHub ✓':'חיבור ל-GitHub')+'</button></div>';
   h+=updCard();
