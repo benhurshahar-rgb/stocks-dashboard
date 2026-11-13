@@ -1,13 +1,13 @@
 {
   "id": "./hon-app",
-  "name": "השקעות – הון עצמי",
-  "short_name": "השקעות",
+  "name": "הון עצמי",
+  "short_name": "הון עצמי",
   "lang": "he",
   "dir": "rtl",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f3f5fb",
+  "background_color": "#1e1b4b",
   "theme_color": "#1e1b4b",
   "icons": [
     {
