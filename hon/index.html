@@ -162,7 +162,7 @@ button{font:inherit;cursor:pointer}
 .ptbl .num{text-align:right}
 .fc h3{font-size:19px;font-weight:700;margin:0 0 2px}
 .fc .sub{font-size:13px;color:#c7d2fe;margin-bottom:12px}
-.fcin{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}
+.fcin{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
 @media (max-width:760px){.fcin{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .fcin label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:#c7d2fe;background:#ffffff10;border:1px solid #ffffff22;border-radius:16px;padding:10px 12px}
 .fcin input{width:100%;border:0;border-bottom:2px solid #ffffff44;background:transparent;color:#fff;font:inherit;font-size:18px;font-weight:700;padding:2px 0;outline:none;direction:ltr;text-align:right}
@@ -185,6 +185,22 @@ button{font:inherit;cursor:pointer}
 .fleg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:13.5px}
 .fleg i,.fl i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:6px}
 .fl{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-top:5px;color:#e0e7ff}
+.depinfo{font-size:13px;color:#c7d2fe;margin:2px 0 10px}
+.depinfo summary{cursor:pointer;min-height:32px;display:flex;align-items:center}
+.depinfo .ptbl{font-size:12.5px}
+.arow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:#ffffff0d;margin-top:6px;font-size:13.5px}
+.arow.sub{background:transparent;padding:3px 10px 3px 10px;margin-top:2px;font-size:12.5px;color:#c7d2fe}
+.arow.sub .al{padding-inline-start:14px}
+.arow .ab{height:8px;border-radius:99px;background:#ffffff14;overflow:hidden;display:flex}
+.arow .ab i{display:block;height:100%;border-radius:99px}
+.arow b{white-space:nowrap}
+@media (max-width:600px){.arow{grid-template-columns:minmax(0,1fr) auto}.arow .ab{display:none}}
+.rowedit{border:0;background:#ffffff22;color:#fff;border-radius:10px;width:40px;height:40px;font-size:16px}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.links a{flex:1 1 200px;min-height:48px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px 14px;border-radius:16px;background:#ffffff14;border:1px solid #ffffff2a;color:#fff;text-decoration:none;font-size:14.5px;font-weight:600}
+.links a:hover{background:#ffffff26}
+#syncBtn.ok{color:#a7f3d0;border-color:#34d39966}
+#syncBtn.warn{color:#fde68a;border-color:#fbbf2499;background:#f59e0b22}
 .dlgnote{font-size:12.5px!important;margin-top:10px!important}
 
 /* ---------- dialog ---------- */
@@ -227,7 +243,7 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
 <main class="wrap" id="home" hidden>
   <div class="bar">
     <h2><span class="dot"></span>הון עצמי <span class="upd" id="updMonth"></span></h2>
-    <button class="ghost" id="logout" type="button">יציאה</button>
+    <span style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="ghost" id="syncBtn" type="button">סנכרון…</button><button class="ghost" id="logout" type="button">יציאה</button></span>
   </div>
 
   <section class="total">
@@ -280,15 +296,25 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
       <span class="s" id="s-pen">שחר ולוטם</span>
     </button>
 
-    <div class="tile exp" id="t-exp">
-      <span class="pill">בקרוב</span>
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></span>
+    <a class="tile exp" id="t-exp" href="https://claude.ai/artifact/KjdtU12DXeTkDVRq33qYRk" target="_blank" rel="noopener" style="text-decoration:none">
+      <span class="pill">פתח ↗</span>
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></span>
       <span class="t">הוצאות</span>
-      <span class="a" style="font-size:20px;opacity:.9">עוד לא נבנה</span>
+      <span class="a" style="font-size:19px">הוצאות חודשיות קבועות</span>
       <span class="s">לא נכלל בסה״כ</span>
-    </div>
+    </a>
   </section>
 
+  <nav class="links" aria-label="הדשבורדים שלי">
+    <a href="../../pension-dashboard/">החיסכון הפנסיוני של שחר ולוטם ←</a>
+    <a href="../">חסכונות ←</a>
+    <a href="https://claude.ai/artifact/KjdtU12DXeTkDVRq33qYRk" target="_blank" rel="noopener">הוצאות חודשיות קבועות ↗</a>
+  </nav>
+  <section class="panel fc" id="attr" hidden>
+    <h3>מאיפה הגיע השינוי</h3>
+    <div class="sub">לפי הטווח שנבחר בגרף למעלה (חודש, חצי שנה, שנה או תאריך)</div>
+    <div id="attrBody"></div>
+  </section>
   <section class="panel fc" id="fc" hidden>
     <h3>תחזית: כמה הון יהיה לי בעתיד</h3>
     <div class="sub">הערכה לפי ההנחות שלמטה. אפשר לשנות כל מספר והגרף מתעדכן.</div>
@@ -300,18 +326,18 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
       <button type="button" data-y="10">10 שנים</button>
     </div>
     <div class="fcin">
-      <label>ריבית על הפיקדון (% בשנה)<input id="fcRate" inputmode="decimal" autocomplete="off"></label>
       <label>חסכון חודשי (₪)<input id="fcSave" inputmode="decimal" autocomplete="off"></label>
       <label>החסכון מתחיל בחודש<input id="fcStart" type="month" placeholder="2027-02"></label>
       <label>תשואת פנסיה וקרנות (% בשנה)<input id="fcPen" inputmode="decimal" autocomplete="off"></label>
-      <label>הפקדות חודשיות לפנסיה (₪)<input id="fcPenDep" inputmode="decimal" autocomplete="off"></label>
+      <label>כל ההפקדות החודשיות לפנסיה ולקרנות (₪)<input id="fcPenDep" inputmode="decimal" autocomplete="off"></label>
     </div>
+    <details class="depinfo"><summary>מה כלול בהפקדות החודשיות?</summary><div id="fcDepInfo" class="cnote" style="line-height:1.6;margin-top:6px"></div></details>
     <div class="chg" id="fcChg"></div>
     <div class="chart" id="fcChart" style="margin-top:34px"></div>
     <div class="fcards" id="fcCards"></div>
     <div class="cnote" id="fcNote" style="margin-top:10px;line-height:1.6"></div>
     <h3 style="margin-top:22px">תחזית מול מציאות</h3>
-    <div class="sub">כמה הערכנו, כמה יש בפועל ומה הפער</div>
+    <div class="sub">חודש אחרי חודש: כמה הערכנו, כמה יצא בפועל ומה הפער</div>
     <div id="cmp"></div>
   </section>
   <div class="foot" id="foot"></div>
@@ -329,19 +355,26 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     <span class="a num" id="d-val">—</span>
     <span class="g" id="d-gain"></span>
   </section>
-  <div class="chips" id="chips"></div>
-  <div class="panel">
-    <div class="chg" id="d-chg" style="margin-top:0"></div>
-    <div class="chart" id="depChart"></div>
-  </div>
   <div class="facts">
     <div class="fact"><div class="k">ריבית שנתית</div><div class="v num" id="d-rate">—</div></div>
     <div class="fact"><div class="k">סכום ההפקדה</div><div class="v num" id="d-amt">—</div></div>
-    <div class="fact"><div class="k">נכון ל</div><div class="v num" id="d-asof">—</div></div>
+    <div class="fact"><div class="k">תאריך התחלה</div><div class="v num" id="d-asof">—</div></div>
   </div>
   <div class="panel">
-    <h3>כל התקופות במבט אחד</h3>
-    <div style="overflow-x:auto"><table class="ptbl" id="d-tbl"></table></div>
+    <h3>קדימה: כמה יהיה בפיקדון</h3>
+    <div class="rng" id="fchips" role="group" aria-label="טווח קדימה">
+      <button type="button" data-y="1">שנה</button><button type="button" data-y="2">שנתיים</button><button type="button" data-y="3">3 שנים</button><button type="button" data-y="5">5 שנים</button><button type="button" data-y="10">10 שנים</button>
+    </div>
+    <div class="chg" id="d-fchg"></div>
+    <div class="chart" id="depF" style="margin-top:34px"></div>
+    <div style="overflow-x:auto;margin-top:10px"><table class="ptbl" id="d-ftbl"></table></div>
+  </div>
+  <div class="panel">
+    <h3>אחורה: אילו הפיקדון היה קיים כבר אז</h3>
+    <div class="chips" id="chips" style="margin-top:0"></div>
+    <div class="chg" id="d-chg"></div>
+    <div class="chart" id="depChart" style="margin-top:34px"></div>
+    <div style="overflow-x:auto;margin-top:10px"><table class="ptbl" id="d-tbl"></table></div>
   </div>
   <div class="foot" id="d-note"></div>
 </main>
@@ -354,8 +387,40 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     <input class="inp num" id="depAmt" inputmode="decimal" autocomplete="off" style="border-color:#a7f3d0">
     <label class="bl" for="depRate">ריבית שנתית (%)</label>
     <input class="inp num" id="depRate" inputmode="decimal" autocomplete="off" style="border-color:#a7f3d0">
+    <label class="bl" for="depStartIn">תאריך תחילת הפיקדון</label>
+    <input class="inp num" id="depStartIn" type="date" style="border-color:#a7f3d0;font-size:18px">
     <p class="dlgnote">שים לב: בדשבורד ההשקעות אותו סכום משמש להשוואה של כל האפיקים (כל מניה מחושבת על אותו סכום).</p>
     <div class="acts"><button class="ok" value="ok" style="background:linear-gradient(90deg,#10b981,#0ea5e9)">שמור</button><button class="no" value="cancel" formnovalidate>ביטול</button></div>
+  </form>
+</dialog>
+
+<dialog id="sdlg">
+  <form method="dialog" id="sdf">
+    <h3>שמירה בכל המכשירים</h3>
+    <p id="sState"></p>
+    <ol style="margin:0 0 12px;padding-inline-start:18px;font-size:13.5px;color:#334155;line-height:1.7">
+      <li>היכנס ל-<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:#4338ca">github.com/settings/personal-access-tokens/new</a></li>
+      <li>Token name: <b>hon</b>, Expiration: שנה</li>
+      <li>Repository access: <b>Only select repositories</b> ← <b>stocks-dashboard</b></li>
+      <li>Permissions ← Repository ← <b>Contents: Read and write</b></li>
+      <li>Generate token, העתק והדבק כאן:</li>
+    </ol>
+    <input id="sTok" type="password" placeholder="github_pat_…" autocomplete="off" style="width:100%;padding:12px;border-radius:12px;border:2px solid #c7d2fe;font:inherit;font-size:14px;direction:ltr">
+    <p class="dlgnote" id="sErr" style="color:#b91c1c;min-height:18px"></p>
+    <p class="dlgnote">עושים את זה פעם אחת. הטוקן נשמר מוצפן בסיסמה שלך, כך שכל מכשיר שנכנס עם הסיסמה מתחבר לבד. הטוקן נותן גישה רק למאגר הזה, ותוקפו עד שנה: כשהוא יפוג תופיע כאן אזהרה ותצטרך ליצור חדש.</p>
+    <div class="acts"><button class="ok" value="ok" id="sGo" style="background:linear-gradient(90deg,#6366f1,#8b5cf6)">חבר</button><button class="no" value="cancel" formnovalidate>סגור</button></div>
+  </form>
+</dialog>
+
+<dialog id="rdlg">
+  <form method="dialog" id="rdf">
+    <h3>תיקון ידני: <span id="rTitle"></span></h3>
+    <p>הסכומים לסוף החודש, בשקלים</p>
+    <label class="bl" for="rEst">הערכנו</label>
+    <input class="inp num" id="rEst" inputmode="decimal" autocomplete="off">
+    <label class="bl" for="rAct">בפועל</label>
+    <input class="inp num" id="rAct" inputmode="decimal" autocomplete="off">
+    <div class="acts"><button class="ok" value="ok">שמור</button><button class="no" value="cancel" formnovalidate>ביטול</button></div>
   </form>
 </dialog>
 
@@ -368,11 +433,6 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     <label class="bl">🇺🇸 בנק בארה״ב ($)</label>
     <input class="inp num" id="oshUs" inputmode="decimal" autocomplete="off">
     <p class="fxn" id="fxn"></p>
-    <details class="tok" id="tokBox">
-      <summary>שמירה לכל המכשירים (GitHub)</summary>
-      <div style="margin-top:6px">בלי טוקן הערך נשמר רק במכשיר הזה. אם כבר חיברת את GitHub בדשבורד ההשקעות, הטוקן נמצא כאן אוטומטית.</div>
-      <input id="tokIn" type="password" placeholder="github_pat_…" autocomplete="off">
-    </details>
     <div class="acts"><button class="ok" value="ok">שמור</button><button class="no" value="cancel" formnovalidate>ביטול</button></div>
   </form>
 </dialog>
@@ -392,8 +452,8 @@ var PEN_DATA=PEN_URL+"data.enc.json";
 var PEN_STORE="pension-dashboard-key";
 var STOCKS_URL="../";
 var DEPOSIT_NAME="פיקדון שקלי מובטח";
-var ORDER=["1d","1w","1m","ytd","1y","3y"];
-var LABEL={"1d":"יום","1w":"שבוע","1m":"חודש","ytd":"מתחילת השנה","1y":"שנה","3y":"3 שנים"};
+var ORDER=["1d","1w","1m","ytd","1y","2y","3y"];
+var LABEL={"1d":"יום","1w":"שבוע","1m":"חודש","ytd":"מתחילת השנה","1y":"שנה","2y":"שנתיים","3y":"3 שנים"};
 
 var $=function(id){return document.getElementById(id);};
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
@@ -424,7 +484,7 @@ function encrypt(key,obj){
 
 /* ---------- state ---------- */
 var ENC=null, KEY=null, PEN=null, CFG=null, DATA=null, OSH=null, oshSha=null;
-var period=lsGet("period")||"1y";
+var period=lsGet("hon-period")||"1y";
 if(ORDER.indexOf(period)<0) period="1y";
 
 (function(){ var s=""; try{ s=new Date().toLocaleDateString("he-IL",{month:"long",year:"numeric",timeZone:"Asia/Jerusalem"}); }catch(e){}
@@ -462,10 +522,63 @@ function unlock(key,data){
   $("lock").hidden=true;
   route();
   render();
-  loadStocks().then(render).catch(function(){ $("v-sav").textContent="—"; $("s-sav").textContent="לא הצלחתי לטעון את הפיקדון"; });
-  loadOsh().then(render);
-  loadTrack().then(render);
+  var st=loadStocks().then(render).catch(function(){ $("v-sav").textContent="—"; $("s-sav").textContent="לא הצלחתי לטעון את הפיקדון"; });
+  syncInit().then(function(){
+    syncStatus();
+    return Promise.all([loadOsh().then(render), loadTrack().then(render), st]);
+  }).then(flushLocal);
 }
+
+/* ---------- saving on every device ----------
+   Writing to the repo needs a GitHub token. It is created once, then kept in the repo encrypted with the
+   password key, so every device that unlocks with the password gets it and nothing stays on one device only. */
+var SYNC_PATH="hon/sync.enc.json", SYNC_OK=null;
+function syncInit(){
+  if(token()) return Promise.resolve();
+  return fetch("https://raw.githubusercontent.com/"+OWNER+"/"+REPO+"/main/"+SYNC_PATH+"?t="+Date.now(),{cache:"no-store"})
+    .then(function(r){ return r.ok?r.json():null; }).then(function(enc){ return enc?decrypt(KEY,enc):null; })
+    .then(function(v){ if(v&&v.token) lsSet("gh-token",v.token); }).catch(function(){});
+}
+function syncPublish(){ // put the encrypted token in the repo (if it is not there already with the same token)
+  return encrypt(KEY,{token:token()}).then(function(enc){
+    return gh("/contents/"+SYNC_PATH+"?ref=main").then(function(r){ return r.ok?r.json():null; }).then(function(j){
+      var same=j?decrypt(KEY,JSON.parse(unb64utf(j.content))).then(function(v){ return v&&v.token===token(); }).catch(function(){ return false; }):Promise.resolve(false);
+      return same.then(function(yes){ if(yes) return;
+        var body={message:"סנכרון בין מכשירים (מוצפן)",content:b64utf(JSON.stringify(enc)+"\n"),branch:"main"}; if(j) body.sha=j.sha;
+        return gh("/contents/"+SYNC_PATH,{method:"PUT",body:body}).then(function(r){ if(!r.ok) throw new Error("לא הצלחתי לשמור את החיבור"); }); });
+    });
+  });
+}
+function syncCheck(tok){
+  return fetch(API,{headers:{Accept:"application/vnd.github+json",Authorization:"Bearer "+tok},cache:"no-store"}).then(function(r){
+    if(r.status===401) throw new Error("הטוקן לא תקין או שפג תוקפו"); if(!r.ok) throw new Error("לטוקן אין גישה למאגר stocks-dashboard");
+    return r.json(); }).then(function(j){ if(!(j.permissions&&j.permissions.push)) throw new Error("לטוקן חסרה ההרשאה Contents: Read and write"); });
+}
+function syncStatus(){
+  var b=$("syncBtn");
+  if(!token()){ SYNC_OK=false; b.className="ghost warn"; b.textContent="⚠ נשמר רק במכשיר הזה · חבר"; return; }
+  syncCheck(token()).then(function(){ SYNC_OK=true; b.className="ghost ok"; b.textContent="✓ נשמר בכל המכשירים"; return syncPublish(); })
+    .catch(function(e){ if(SYNC_OK) return; SYNC_OK=false; b.className="ghost warn"; b.textContent="⚠ החיבור לא עובד · תקן"; b.title=e.message; });
+}
+function flushLocal(){ // anything that was saved only on this device goes up once there is a token
+  if(!token()) return;
+  var l=null; try{ l=JSON.parse(lsGet("hon-osh-local")||"null"); }catch(e){}
+  if(l) decrypt(KEY,l).then(function(v){ v=norm(v); if(v&&OSH&&v.updatedAt===OSH.updatedAt) saveOsh(OSH.il,OSH.us); else lsSet("hon-osh-local",null); }).catch(function(){ lsSet("hon-osh-local",null); });
+  if(TRK&&TRK_WHERE==="local") saveTrack();
+  if(lsGet("cfg-local")&&CFG) saveConfig(CFG);
+}
+$("syncBtn").addEventListener("click",function(){
+  $("sState").textContent=SYNC_OK?"מחובר ✓ כל שינוי נשמר לכל המכשירים. אפשר להחליף טוקן כאן אם צריך.":"כרגע שינויים נשמרים רק במכשיר הזה. כדי שיישמרו בכל המכשירים ולא יאבדו, צריך לחבר פעם אחת:";
+  $("sTok").value=""; $("sErr").textContent=""; $("sdlg").showModal();
+});
+$("sdf").addEventListener("submit",function(e){
+  var btn=e.submitter; if(btn&&btn.value==="cancel") return;
+  e.preventDefault(); var t=$("sTok").value.trim(); if(!t){ $("sTok").focus(); return; }
+  $("sGo").disabled=true; $("sErr").textContent="בודק…";
+  syncCheck(t).then(function(){ lsSet("gh-token",t); return syncPublish(); }).then(function(){
+    SYNC_OK=true; syncStatus(); flushLocal(); $("sdlg").close(); toast("מחובר ✓ מעכשיו הכול נשמר בכל המכשירים"); render();
+  }).catch(function(err){ $("sErr").textContent=err.message||"החיבור נכשל"; }).then(function(){ $("sGo").disabled=false; });
+});
 
 /* ---------- stocks dashboard data (deposit) ---------- */
 function fetchJson(url){ return fetch(url+(url.indexOf("?")<0?"?":"&")+"t="+Date.now(),{cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }); }
@@ -485,11 +598,20 @@ function depositAsset(){
   var deps=CFG.assets.filter(function(a){return a.type==="deposit";});
   return deps.filter(function(a){return a.name===DEPOSIT_NAME;})[0]||deps[0]||null;
 }
-function depositValue(p){
-  var a=depositAsset(); if(!a||!DATA||!DATA.periods||!DATA.periods[p]) return null;
-  var amount=+CFG.amount||3700000;
-  return amount*Math.pow(1+(+a.rate||0)/100, days(DATA.periods[p],DATA.asOf)/365);
+function depAmount(){ return +CFG.amount||3700000; }
+function depRate(){ var a=depositAsset(); return a?(+a.rate||0):0; }
+function depStart(){ var a=depositAsset(); return a&&/^\d{4}-\d{2}-\d{2}$/.test(a.start||"")?a.start:todayStr(); }
+// The real deposit: the amount until the day it started, then compound interest at its yearly rate.
+function depAtDate(d){ return depositAsset()?depAmount()*Math.pow(1+depRate()/100,Math.max(0,days(depStart(),d))/365):null; }
+function depNow(){ return CFG?depAtDate(todayStr()):null; }
+// "What if" for the deposit page: the amount deposited at the start of a past period, at today's rate.
+function pastDate(p){
+  if(!DATA||!DATA.periods) return null;
+  if(p==="2y"){ var d=new Date(DATA.asOf+"T00:00:00Z"); d.setUTCFullYear(d.getUTCFullYear()-2); return d.toISOString().slice(0,10); }
+  return DATA.periods[p]||null;
 }
+function pastValue(p){ var d=pastDate(p); return d?depAmount()*Math.pow(1+depRate()/100,days(d,DATA.asOf)/365):null; }
+
 
 /* ---------- עו״ש ---------- */
 function usdRate(){ return (DATA&&DATA.fx&&+DATA.fx.now)||(PEN&&PEN.fx&&+PEN.fx.USD)||null; }
@@ -551,8 +673,6 @@ $("editOsh").addEventListener("click",function(e){
   $("oshIl").value=OSH?Math.round(OSH.il).toLocaleString("en-US"):"";
   $("oshUs").value=OSH?Math.round(OSH.us).toLocaleString("en-US"):"";
   var rt=usdRate(); $("fxn").textContent=rt?"שער הדולר עכשיו: ₪"+rt.toFixed(3)+" — הסכום בדולרים יומר לשקלים אוטומטית.":"";
-  $("tokIn").value=token();
-  $("tokBox").open=!token();
   $("dlg").showModal();
   setTimeout(function(){ $("oshIl").select(); },50);
 });
@@ -563,7 +683,6 @@ $("df").addEventListener("submit",function(e){
   var il=num("oshIl"), us=num("oshUs");
   if(!isFinite(il)){ e.preventDefault(); $("oshIl").focus(); return; }
   if(!isFinite(us)){ e.preventDefault(); $("oshUs").focus(); return; }
-  var t=$("tokIn").value.trim(); if(t!==token()) lsSet("gh-token",t||null);
   saveOsh(il,us);
 });
 
@@ -640,11 +759,8 @@ function drawChart(box,pts,o){
    Deposit: grows at its annual rate, anchored to today's value from the investments dashboard.
    עו״ש: no history is kept, so today's balance is used for every day. */
 var RANGE=lsGet("hon-range")||"6m", CUSTOM=lsGet("hon-from")||"";
-function depAt(t){
-  var a=depositAsset(); if(!a||!DATA||!DATA.periods[period]) return null;
-  var amount=+CFG.amount||3700000, start=Date.parse(DATA.periods[period]);
-  return amount*Math.pow(1+(+a.rate||0)/100,(t-start)/864e5/365);
-}
+function depAt(t){ return CFG?depAtDate(new Date(t).toISOString().slice(0,10)):null; }
+
 function equitySeries(){
   var G=PEN&&PEN.growth; if(!G||!G.dates||!G.dates.length||!CFG||!OSH) return null;
   var osh=oshIls(); if(osh==null) return null;
@@ -665,21 +781,22 @@ function drawEquity(){
   if(!all){ box.innerHTML='<div class="skel" style="width:100%;height:150px"></div>'; return; }
   var first=new Date(all[0][0]).toISOString().slice(0,10), last=new Date(all[all.length-1][0]).toISOString().slice(0,10);
   $("customD").min=first; $("customD").max=last; if(CUSTOM) $("customD").value=CUSTOM;
-  var st=rangeStart(), pts=all.filter(function(q){ return q[0]>=st; });
+  var st=snapStart(rangeStart()), pts=all.filter(function(q){ return q[0]>=st; });
+  drawAttr(st);
   if(pts.length<2) pts=all.slice(-2);
   var a=pts[0][1], b=pts[pts.length-1][1], ch=b-a, pc=a?b/a-1:0;
   $("eqChg").innerHTML='<b class="num '+(ch>=0?"up":"down")+'">'+(ch>=0?"▲ +":"▼ -")+ils(Math.abs(ch))+' · '+pctStr(pc)+'</b> מאז '+fmtDate(new Date(pts[0][0]).toISOString().slice(0,10));
   drawChart(box,pts,{h:160,color:"#a7f3d0",label:"התקדמות ההון העצמי"});
-  $("eqNote").textContent="היסטוריה משוערת: פנסיה לפי הערכת השווי היומית, פיקדון לפי הריבית, עו״ש לפי היתרה הנוכחית.";
+  $("eqNote").textContent="מה נכלל בשינוי: הפנסיה והקרנות (דוחות אמיתיים כשיש, אחרת הערכה לפי השוק), כולל הפקדות חדשות. הפיקדון קבוע עד שהתחיל ב-"+fmtDate(depStart())+" ומאז צובר ריבית. העו״ש לפי היתרה של היום. פירוט למטה ב\"מאיפה הגיע השינוי\".";
 }
 $("rng").addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return; RANGE=b.getAttribute("data-r"); lsSet("hon-range",RANGE); drawEquity(); });
 $("customD").addEventListener("change",function(){ if(!this.value) return; CUSTOM=this.value; RANGE="custom"; lsSet("hon-from",CUSTOM); lsSet("hon-range",RANGE); drawEquity(); });
 $("customL").addEventListener("click",function(){ if(CUSTOM&&RANGE!=="custom"){ RANGE="custom"; lsSet("hon-range",RANGE); drawEquity(); } });
 
 /* ---------- forecast ----------
-   Deposit: the deposit amount at a fixed yearly rate. Monthly savings: added every month, earning the same rate.
-   Pension & funds: today's value, growing at the yearly return measured from our own history
-   (deposits removed, so it is investment return only), plus the monthly deposits seen in the last year.
+   Deposit: its real value today at its own yearly rate (from the deposit page). Monthly savings: added from the
+   chosen month, earning the same rate. Pension & funds: today's value, growing at the yearly return measured from
+   our own history (deposits removed), plus all the monthly deposits (both of us, every fund, employee + employer).
    עו״ש stays as it is. Nominal shekels, before tax and fees. */
 function histPension(){
   var G=PEN&&PEN.growth; if(!G||!G.dates||G.dates.length<30) return {ret:5,dep:0,years:0};
@@ -701,17 +818,32 @@ if(FC_YEARS.indexOf(FCY)<0) FCY=10;
 function todayStr(){ return new Date().toLocaleDateString("sv-SE",{timeZone:"Asia/Jerusalem"}); }
 function yLabel(y){ return y===1?"שנה":y===2?"שנתיים":y+" שנים"; }
 function monthHe(ym){ try{ return new Date(ym+"-15T00:00:00Z").toLocaleDateString("he-IL",{month:"long",year:"numeric",timeZone:"UTC"}); }catch(e){ return ym; } }
+function num(id){ var x=parseFloat(String($(id).value).replace(/[,₪%\s]/g,"")); return isFinite(x)?x:null; }
 function fcLoad(){
-  var h=histPension(), saved={}; try{ saved=JSON.parse(lsGet("hon-fc")||"{}")||{}; }catch(e){}
-  FC={rate:saved.rate!=null?saved.rate:4, save:saved.save!=null?saved.save:10000, saveStart:/^\d{4}-\d{2}$/.test(saved.saveStart||"")?saved.saveStart:"2027-02",
-      pen:saved.pen!=null?saved.pen:h.ret, penDep:saved.penDep!=null?saved.penDep:h.dep, hist:h};
+  var h=histPension(), saved={}; try{ saved=JSON.parse(lsGet("hon-fc2")||"{}")||{}; }catch(e){}
+  var dataDep=PEN.deposits&&isFinite(+PEN.deposits.monthly)?+PEN.deposits.monthly:null;
+  FC={save:saved.save!=null?saved.save:10000, saveStart:/^\d{4}-\d{2}$/.test(saved.saveStart||"")?saved.saveStart:"2027-02",
+      pen:saved.pen!=null?saved.pen:h.ret, penDep:saved.penDep!=null?saved.penDep:(dataDep!=null?dataDep:h.dep), hist:h, dataDep:dataDep};
   fcFill();
 }
 function fcFill(){
-  $("fcRate").value=FC.rate; $("fcSave").value=Math.round(FC.save).toLocaleString("en-US"); $("fcStart").value=FC.saveStart;
+  $("fcSave").value=Math.round(FC.save).toLocaleString("en-US"); $("fcStart").value=FC.saveStart;
   $("fcPen").value=FC.pen; $("fcPenDep").value=Math.round(FC.penDep).toLocaleString("en-US");
 }
-function fcParams(){ return {rate:FC.rate, save:FC.save, saveStart:FC.saveStart, pen:FC.pen, penDep:FC.penDep}; }
+function fcParams(){ return {rate:depRate(), save:FC.save, saveStart:FC.saveStart, pen:FC.pen, penDep:FC.penDep}; }
+var CAT_HE={pension:"קרן פנסיה",bm:"ביטוח מנהלים",hish:"קרן השתלמות",gemel:"קופת גמל",k401:"401k",ireland:"פנסיה באירלנד"};
+function fundName(f){ return (f.kind||CAT_HE[f.category]||"קופה")+(f.provider?" · "+f.provider:"")+" ("+f.person+")"; }
+function depInfoHtml(){
+  var D=PEN.deposits;
+  if(!D||!D.items) return 'הסכום הוא הערכה לפי ההפקדות שנרשמו בדוחות השנתיים בשנה האחרונה, של שניכם יחד. פירוט לפי קופה יופיע כאן אחרי העדכון היומי הבא של דשבורד הפנסיה.';
+  var act=D.items.filter(function(x){ return x.monthly>0; }), none=D.items.filter(function(x){ return !(x.monthly>0); });
+  var h='סכום אחד של שחר ולוטם יחד, מכל הקופות: פנסיה, ביטוח מנהלים, קרנות השתלמות וגמל. הסכומים הם סך ההפקדה לקופה (עובד, מעסיק ופיצויים) כפי שהוזן בדשבורד הפנסיה או כפי שמופיע בדוח השנתי.';
+  h+='<table class="ptbl" style="margin-top:8px"><tbody>'+act.map(function(x){ return '<tr><td>'+fundName(x)+'</td><td class="num">'+ils(x.monthly)+'</td><td>'+(x.source==="monthly"?"הפקדה חודשית שהוזנה":"ממוצע חודשי לפי דוח "+String(x.source||"").replace("report:",""))+'</td></tr>'; }).join("")+
+     '<tr class="sel"><td>סה״כ בחודש</td><td class="num">'+ils(D.monthly)+'</td><td></td></tr></tbody></table>';
+  if(none.length) h+='<div style="margin-top:6px">בלי הפקדות בחישוב: '+none.map(function(x){ return fundName(x)+(x.inactive?" – לא פעילה":x.paused?" – הפקדות מושהות":" – אין נתון על הפקדות"); }).join(" · ")+'. אם באחת מהן יש הפקדות, אפשר לתקן את הסכום בשדה למעלה.</div>';
+  if(FC&&Math.round(FC.penDep)!==Math.round(D.monthly)) h+='<div style="margin-top:6px">בשדה למעלה רשום כרגע '+ils(FC.penDep)+' (שינוי ידני). <button type="button" class="ghost" id="fcDepReset">חזרה ל-'+ils(D.monthly)+'</button></div>';
+  return h;
+}
 // P: assumptions. S: starting point {date, dep, osh, penL (open funds), penI (pension & closed funds)}.
 function projectFrom(P,S,penRate,months){
   var y0=+S.date.slice(0,4), m0=+S.date.slice(5,7)-1, first=P.saveStart?(+P.saveStart.slice(0,4))*12+(+P.saveStart.slice(5,7)-1):-1e9;
@@ -723,10 +855,8 @@ function projectFrom(P,S,penRate,months){
   }
   return out;
 }
-/* Reality today. The deposit is its amount plus interest at its own rate (both from the deposit page) since the forecast was saved. */
 function actualNow(){
-  var a=depositAsset(), amount=+CFG.amount||3700000, since=TRK&&TRK.base?TRK.base.date:todayStr(), ps=penSplit();
-  var dep=amount*Math.pow(1+(+(a&&a.rate)||0)/100, Math.max(0,days(since,todayStr()))/365), osh=oshIls()||0, penI=PEN.family.total-ps.liq;
+  var ps=penSplit(), dep=depNow(), osh=oshIls()||0, penI=PEN.family.total-ps.liq;
   return {date:todayStr(), dep:dep, osh:osh, penL:ps.liq, penI:penI, liq:dep+osh+ps.liq, ill:penI, total:dep+osh+ps.liq+penI};
 }
 function drawForecast(){
@@ -741,36 +871,35 @@ function drawForecast(){
   var end=mid[M], start=mid[0].total;
   var btn=function(v,color,label,val){ return '<button type="button" data-v="'+v+'" class="'+(FCV===v?"on":"")+'" aria-pressed="'+(FCV===v)+'"><i style="background:'+color+'"></i>'+label+' <b class="num">'+ils(val)+'</b></button>'; };
   $("fcChg").innerHTML='בעוד '+yLabel(FCY)+': <b class="num up">'+ils(end.total)+'</b> <span class="num">(×'+(end.total/start).toFixed(2)+')</span> · טווח <span class="num">'+shortIls(lo[M].total)+' – '+shortIls(hi[M].total)+'</span>'+
-    '<div class="fleg">'+btn("all","#fde68a","הכול",end.total)+btn("liq","#34d399","הון נזיל",end.liq)+btn("ill","#c084fc","הון לא נזיל",end.ill)+'</div>'+
-    '<div class="cnote">לחיצה על "הון נזיל" או "הון לא נזיל" מציגה בגרף רק אותו.</div>';
-  var o={h:210,lo:cut(lo),hi:cut(hi)};
-  if(FCV==="liq"){ o.color="#34d399"; o.label="תחזית ההון הנזיל"; }
-  else if(FCV==="ill"){ o.color="#c084fc"; o.label="תחזית ההון הלא נזיל"; }
-  else { o.color="#fde68a"; o.sub=mid.slice(0,M+1).map(function(x){return x.liq;}); o.subColor="#34d399"; o.topColor="#c084fc"; o.label="תחזית ההון העצמי: נזיל, לא נזיל וסה״כ"; }
-  drawChart($("fcChart"),pts,o);
+    '<div class="fleg">'+btn("all","#fde68a","הכול",end.total)+btn("liq","#34d399","הון נזיל",end.liq)+btn("ill","#c084fc","הון לא נזיל",end.ill)+'</div>';
+  drawChart($("fcChart"),pts,{h:210,lo:cut(lo),hi:cut(hi),color:FCV==="liq"?"#34d399":FCV==="ill"?"#c084fc":"#fde68a",
+    label:FCV==="liq"?"תחזית ההון הנזיל":FCV==="ill"?"תחזית ההון הלא נזיל":"תחזית ההון העצמי הכולל"});
   $("fcCards").innerHTML=FC_YEARS.map(function(y){ var x=mid[y*12];
     return '<div class="fcard"><div class="k">בעוד '+yLabel(y)+'</div><div class="v num">'+ils(x.total)+'</div><div class="d up num">+'+shortIls(x.total-start)+'</div>'+
       '<div class="fl"><span><i style="background:#34d399"></i>נזיל</span><b class="num">'+shortIls(x.liq)+'</b></div><div class="fl"><span><i style="background:#c084fc"></i>לא נזיל</span><b class="num">'+shortIls(x.ill)+'</b></div></div>'; }).join("");
+  $("fcDepInfo").innerHTML=depInfoHtml();
   var h=FC.hist;
-  $("fcNote").textContent="ההנחות: פיקדון של "+ils(S.dep)+" בריבית "+FC.rate+"% בשנה. חסכון של "+ils(FC.save)+" בחודש החל מ"+monthHe(FC.saveStart)+", שמצטרף לפיקדון באותה ריבית. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
+  $("fcNote").textContent="ההנחות: פיקדון של "+ils(S.dep)+" בריבית "+P.rate+"% בשנה (משנים בדף החסכון). חסכון של "+ils(FC.save)+" בחודש החל מ"+monthHe(FC.saveStart)+", שמצטרף לפיקדון באותה ריבית. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
     (h.years>0.5?" (התשואה השנתית הממוצעת שלנו ב-"+h.years.toFixed(1)+" השנים האחרונות, בלי הפקדות, הייתה "+h.ret+"%)":"")+
-    (FC.penDep?", ועוד "+ils(FC.penDep)+" הפקדות בחודש כמו בשנה האחרונה":"")+". עו״ש נשאר כמו היום. הון נזיל: הפיקדון, החסכון החודשי, העו״ש וקרנות ההשתלמות שכבר פתוחות. הון לא נזיל: הפנסיה, הקופות שעוד סגורות וההפקדות החדשות לפנסיה (קופה שתיפתח בעתיד נשארת בתחזית בצד הלא נזיל). הרצועה מסביב לקו מראה מה קורה אם תשואת הפנסיה גבוהה או נמוכה ב-"+FC_BAND+" נקודות אחוז. הסכומים נומינליים, לפני מס ודמי ניהול, וזו הערכה בלבד: תשואות העבר לא מבטיחות את העתיד.";
+    (FC.penDep?", ועוד "+ils(FC.penDep)+" הפקדות בחודש":"")+". עו״ש נשאר כמו היום. הון נזיל: הפיקדון, החסכון החודשי, העו״ש וקרנות ההשתלמות שכבר פתוחות. הון לא נזיל: הפנסיה, הקופות שעוד סגורות וכל ההפקדות החדשות (קופה שתיפתח בעתיד נשארת בתחזית בצד הלא נזיל). הרצועה מסביב לקו מראה מה קורה אם תשואת הפנסיה גבוהה או נמוכה ב-"+FC_BAND+" נקודות אחוז. הסכומים נומינליים, לפני מס ודמי ניהול, וזו הערכה בלבד: תשואות העבר לא מבטיחות את העתיד.";
   drawCompare();
 }
 $("fcH").addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return; FCY=+b.getAttribute("data-y"); lsSet("hon-fc-y",String(FCY)); drawForecast(); });
 $("fcChg").addEventListener("click",function(e){ var b=e.target.closest("button[data-v]"); if(!b) return; var v=b.getAttribute("data-v"); FCV=(v===FCV&&v!=="all")?"all":v; drawForecast(); });
-["fcRate","fcSave","fcStart","fcPen","fcPenDep"].forEach(function(id){ $(id).addEventListener("change",function(){
-  var n=function(i){ var x=parseFloat(String($(i).value).replace(/[,₪%\s]/g,"")); return isFinite(x)?x:null; };
-  var a=n("fcRate"), b=n("fcSave"), c=n("fcPen"), d=n("fcPenDep"), st=$("fcStart").value;
-  if(a!=null) FC.rate=Math.min(30,Math.max(-10,a)); if(b!=null) FC.save=b; if(c!=null) FC.pen=Math.min(30,Math.max(-10,c)); if(d!=null) FC.penDep=d;
+function fcStore(){ lsSet("hon-fc2",JSON.stringify({save:FC.save,saveStart:FC.saveStart,pen:FC.pen,penDep:FC.penDep})); fcFill(); drawForecast(); }
+["fcSave","fcStart","fcPen","fcPenDep"].forEach(function(id){ $(id).addEventListener("change",function(){
+  var b=num("fcSave"), c=num("fcPen"), d=num("fcPenDep"), st=$("fcStart").value;
+  if(b!=null) FC.save=b; if(c!=null) FC.pen=Math.min(30,Math.max(-10,c)); if(d!=null) FC.penDep=d;
   if(/^\d{4}-\d{2}$/.test(st)) FC.saveStart=st;
-  lsSet("hon-fc",JSON.stringify(fcParams())); fcFill(); drawForecast(); }); });
+  fcStore(); }); });
+$("fcDepInfo").addEventListener("click",function(e){ if(e.target.id==="fcDepReset"&&FC.dataDep!=null){ FC.penDep=FC.dataDep; fcStore(); } });
 
-/* ---------- forecast vs reality ----------
-   The forecast is frozen on the day it is saved (assumptions + starting values). Every later visit compares
-   what it predicted for that day with what there is, and once a month the real numbers are logged.
-   Kept encrypted next to the עו״ש file; without a GitHub token it stays on this device. */
-var TRK=null, TRK_STATE="loading", TRK_WHERE="", trkSha=null, TRK_PATH="hon/track.enc.json", trkT=null, trkArm=false;
+/* ---------- forecast vs reality, month by month ----------
+   The forecast is frozen when it is saved (assumptions + starting values). For every month that has ended, one row is
+   added: what the forecast said for the last day of that month, and what there really was. A row never changes after
+   it is written (unless edited by hand). Rows are added on the first visit after the month ends, using the pension
+   value of that last day. Kept encrypted next to the עו״ש file; without a GitHub token it stays on this device. */
+var TRK=null, TRK_STATE="loading", TRK_WHERE="", trkSha=null, TRK_PATH="hon/track.enc.json", trkT=null;
 function loadTrack(){
   var local=null; try{ local=JSON.parse(lsGet("hon-track-local")||"null"); }catch(e){}
   var remote=token()
@@ -781,7 +910,7 @@ function loadTrack(){
   return remote.catch(function(){ return {st:"unknown"}; }).then(function(res){
     var encs=[[res.enc,"gh"],[local,"local"]].filter(function(x){ return x[0]; });
     return Promise.all(encs.map(function(x){ return decrypt(KEY,x[0]).then(function(v){ if(v) v._w=x[1]; return v; }).catch(function(){ return null; }); })).then(function(vals){
-      vals=vals.filter(function(v){ return v&&v.base&&v.base.s&&v.base.p; });
+      vals=vals.filter(function(v){ return v&&v.v===2&&v.base&&v.base.s&&v.base.p; });
       vals.sort(function(a,b){ return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
       TRK=vals[0]||null; TRK_WHERE=TRK?TRK._w:""; if(TRK) delete TRK._w; TRK_STATE=res.st;
     });
@@ -798,69 +927,148 @@ function saveTrack(){
       return r.json().then(function(j){ trkSha=j.content.sha; lsSet("hon-track-local",null); TRK_WHERE="gh"; }); }).catch(keepLocal);
   }).then(function(){ drawCompare(); });
 }
-function saveTrackSoon(){ clearTimeout(trkT); trkT=setTimeout(saveTrack,1500); }
-function newBase(){ var a=actualNow(), amount=+CFG.amount||3700000;
-  return {date:todayStr(), p:fcParams(), s:{date:todayStr(), dep:amount, osh:a.osh, penL:a.penL, penI:a.penI}}; }
+function saveTrackSoon(){ clearTimeout(trkT); trkT=setTimeout(saveTrack,1200); }
+function newBase(){ var a=actualNow(); return {date:todayStr(), p:fcParams(), s:{date:todayStr(), dep:a.dep, osh:a.osh, penL:a.penL, penI:a.penI}}; }
 function forecastAt(base,date){
   var mo=Math.max(0,days(base.date,date))/30.4375, arr=projectFrom(base.p,base.s,base.p.pen,Math.ceil(mo)+1), i=Math.floor(mo), f=mo-i, a=arr[i], b=arr[i+1];
   return {liq:a.liq+(b.liq-a.liq)*f, ill:a.ill+(b.ill-a.ill)*f, total:a.total+(b.total-a.total)*f};
 }
+// Reality on a past date: pension from its own history on that day, deposit by its rate, עו״ש as it is now.
+function actualAt(d){
+  var G=PEN.growth, liq=0, ill=0, t=Date.parse(d);
+  if(G&&G.funds&&G.fundIdx){
+    var k=0; while(k<G.fundIdx.length-1&&Date.parse(G.dates[G.fundIdx[k+1]])<=t) k++;
+    var byId={}; (PEN.people||[]).forEach(function(p){ (p.funds||[]).forEach(function(f){ byId[f.id]=f; }); });
+    G.funds.forEach(function(f){ var v=+f.values[k]||0; if(byId[f.id]&&fundLiquid(byId[f.id])) liq+=v; else ill+=v; });
+  } else if(G&&G.dates){
+    var i=0; while(i<G.dates.length-1&&Date.parse(G.dates[i+1])<=t) i++;
+    var pen=0; G.people.forEach(function(p){ pen+=+p.values[i]||0; });
+    var ps=penSplit(), tot=PEN.family.total||1; liq=pen*ps.liq/tot; ill=pen-liq;
+  } else { var s=penSplit(); liq=s.liq; ill=PEN.family.total-s.liq; }
+  liq+=depAtDate(d)+(oshIls()||0);
+  return {liq:liq, ill:ill, total:liq+ill};
+}
+function monthEnd(ym){ return new Date(Date.UTC(+ym.slice(0,4),+ym.slice(5,7),0)).toISOString().slice(0,10); }
+function nextYm(ym){ var y=+ym.slice(0,4), m=+ym.slice(5,7); m++; if(m>12){ m=1; y++; } return y+"-"+(m<10?"0":"")+m; }
 function gapHtml(act,est){ var g=act-est, c=g>=0?"up":"down"; return '<b class="num '+c+'">'+(g>=0?"+":"-")+ils(Math.abs(g))+'<br>'+pctStr(est?g/est:0)+'</b>'; }
 function drawCompare(){
   var box=$("cmp"); if(!box||!FC||!CFG||!PEN||oshIls()==null) return;
   if(TRK_STATE==="loading"){ box.innerHTML='<div class="cnote">טוען את התחזית השמורה…</div>'; return; }
+  var dirty=false;
   if(!TRK){
     if(TRK_STATE==="unknown"){ box.innerHTML='<div class="cnote">לא הצלחתי לבדוק אם יש תחזית שמורה (בעיית רשת). נסה לרענן.</div>'; return; }
-    TRK={v:1, base:newBase(), log:[]}; saveTrack();
+    TRK={v:2, base:newBase(), months:[]}; dirty=true;
   }
-  var T=todayStr(), B=TRK.base, sameDay=B.date===T;
-  if(sameDay){ // still the day the forecast was made: keep it in step with edits
-    var nb=newBase(); if(JSON.stringify(nb)!==JSON.stringify(B)){ TRK.base=B=nb; saveTrackSoon(); }
-  } else if(!trkArm && B.date.slice(0,7)!==T.slice(0,7) && !(TRK.log||[]).some(function(x){ return x.d.slice(0,7)===T.slice(0,7); })){
-    var a0=actualNow(); TRK.log=(TRK.log||[]).concat([{d:T, liq:Math.round(a0.liq), ill:Math.round(a0.ill)}]); saveTrackSoon();
+  var T=todayStr(), B=TRK.base, rows=TRK.months=TRK.months||[];
+  for(var ym=B.date.slice(0,7); ym<T.slice(0,7); ym=nextYm(ym)){
+    if(rows.some(function(x){ return x.ym===ym; })) continue;
+    var me=monthEnd(ym), e=forecastAt(B,me), a=actualAt(me);
+    rows.push({ym:ym, est:Math.round(e.total), act:Math.round(a.total), estLiq:Math.round(e.liq), actLiq:Math.round(a.liq)}); dirty=true;
   }
-  var act=actualNow(), est=forecastAt(B,T);
-  var h='<div class="cmp3"><div class="fact"><div class="k">הערכנו להיום</div><div class="v num">'+ils(est.total)+'</div></div>'+
-        '<div class="fact"><div class="k">יש בפועל</div><div class="v num">'+ils(act.total)+'</div></div>'+
-        '<div class="fact"><div class="k">הפער</div><div class="v">'+gapHtml(act.total,est.total)+'</div></div></div>';
-  h+='<div style="overflow-x:auto"><table class="ptbl"><thead><tr><th></th><th>הערכנו</th><th>בפועל</th><th>פער</th></tr></thead><tbody>'+
-     '<tr><td>הון נזיל</td><td class="num">'+ils(est.liq)+'</td><td class="num">'+ils(act.liq)+'</td><td>'+gapHtml(act.liq,est.liq)+'</td></tr>'+
-     '<tr><td>הון לא נזיל</td><td class="num">'+ils(est.ill)+'</td><td class="num">'+ils(act.ill)+'</td><td>'+gapHtml(act.ill,est.ill)+'</td></tr></tbody></table></div>';
-  var rows=[{d:B.date, liq:B.s.dep+B.s.osh+B.s.penL, ill:B.s.penI}].concat(TRK.log||[]);
-  if(rows[rows.length-1].d!==T) rows.push({d:T, liq:act.liq, ill:act.ill});
-  if(rows.length>=3||days(B.date,T)>=20){
-    var ests=rows.map(function(x){ return forecastAt(B,x.d).total; });
-    h+='<div class="fleg" style="margin:14px 0 30px"><span><i style="background:#fde68a"></i>הערכנו</span><span><i style="background:#fff"></i>בפועל</span></div><div class="chart" id="cmpChart"></div>';
-    h+='<div style="overflow-x:auto;margin-top:10px"><table class="ptbl"><thead><tr><th>תאריך</th><th>הערכנו</th><th>בפועל</th><th>פער</th></tr></thead><tbody>'+
-       rows.slice(1).reverse().map(function(x){ var e=forecastAt(B,x.d).total, a=x.liq+x.ill; return '<tr><td class="num">'+fmtDate(x.d)+'</td><td class="num">'+ils(e)+'</td><td class="num">'+ils(a)+'</td><td>'+gapHtml(a,e)+'</td></tr>'; }).join("")+'</tbody></table></div>';
-  }
-  h+='<div class="cnote" style="margin-top:10px;line-height:1.6">'+(sameDay
-      ?'התחזית נשמרה היום. מעכשיו, בכל כניסה תראה כאן כמה הערכנו לאותו יום, כמה יש בפועל ומה הפער, ופעם בחודש המספרים האמיתיים נרשמים לטבלה. שינוי בהנחות היום עדיין מעדכן את התחזית השמורה.'
-      :'התחזית נשמרה ב-'+fmtDate(B.date)+' עם ההנחות של אותו יום: ריבית '+B.p.rate+'%, חסכון '+ils(B.p.save)+' בחודש החל מ'+monthHe(B.p.saveStart)+', תשואת פנסיה '+B.p.pen+'%. שינוי בהנחות למעלה משנה את הגרף אבל לא את התחזית השמורה.')+
-     ' הפיקדון במציאות מחושב לפי הסכום והריבית שבדף הפיקדון, אז כדאי לעדכן שם ובעו״ש כשמשהו משתנה. '+
-     (TRK_WHERE==="gh"?'נשמר לכל המכשירים.':'נשמר רק במכשיר הזה; כדי שיישמר לכל המכשירים צריך לחבר GitHub (בעריכת העו״ש).')+'</div>'+
-     (sameDay?'':'<button type="button" class="ghost" id="cmpReset" style="margin-top:10px">שמור תחזית חדשה מהיום</button>');
+  rows.sort(function(x,y){ return x.ym<y.ym?-1:1; });
+  if(dirty) saveTrackSoon();
+  var act=actualNow(), est=forecastAt(B,T), curYm=T.slice(0,7);
+  var h='<div style="overflow-x:auto"><table class="ptbl"><thead><tr><th>חודש</th><th>הערכנו</th><th>בפועל</th><th>פער</th><th></th></tr></thead><tbody>';
+  h+='<tr class="sel"><td>'+monthHe(curYm)+'<br><span style="font-weight:400">עד היום</span></td><td class="num">'+ils(est.total)+'</td><td class="num">'+ils(act.total)+'</td><td>'+gapHtml(act.total,est.total)+'</td><td></td></tr>';
+  rows.slice().reverse().forEach(function(x){
+    h+='<tr><td>'+monthHe(x.ym)+(x.manual?'<br><span style="font-weight:400">נערך ידנית</span>':'')+'</td><td class="num">'+ils(x.est)+'</td><td class="num">'+ils(x.act)+'</td><td>'+gapHtml(x.act,x.est)+'</td>'+
+       '<td><button type="button" class="rowedit" data-ym="'+x.ym+'" aria-label="עריכת '+monthHe(x.ym)+'">✎</button></td></tr>'; });
+  h+='</tbody></table></div>';
+  if(rows.length>=2) h+='<div class="fleg" style="margin:14px 0 30px"><span><i style="background:#fde68a"></i>הערכנו</span><span><i style="background:#fff"></i>בפועל</span></div><div class="chart" id="cmpChart"></div>';
+  var changed=JSON.stringify(fcParams())!==JSON.stringify(B.p);
+  h+='<div class="cnote" style="margin-top:10px;line-height:1.6">'+
+     (rows.length?'':'בסוף '+monthHe(curYm)+' תתווסף כאן השורה הראשונה: כמה הערכנו לסוף החודש, כמה יצא בפועל ומה הפער. ')+
+     'כל חודש שמסתיים מקבל שורה משלו, והיא לא משתנה אחר כך גם אם תעדכן את החסכון או את העו״ש. אפשר לתקן שורה ידנית בכפתור ✎. השורה נוספת בכניסה הראשונה שלך אחרי סוף החודש, לפי שווי הפנסיה ביום האחרון של אותו חודש והעו״ש שרשום באותה כניסה. '+
+     'ההערכות מבוססות על התחזית שנשמרה ב-'+fmtDate(B.date)+': ריבית '+B.p.rate+'%, חסכון '+ils(B.p.save)+' בחודש החל מ'+monthHe(B.p.saveStart)+', תשואת פנסיה '+B.p.pen+'%, הפקדות '+ils(B.p.penDep)+' בחודש. '+
+     (TRK_WHERE==="gh"?'נשמר לכל המכשירים.':'נשמר רק במכשיר הזה; כדי שיישמר לכל המכשירים צריך לחבר GitHub (כפתור הסנכרון בראש הדף).')+'</div>'+
+     '<button type="button" class="ghost" id="cmpReset" style="margin-top:10px">'+(changed?'ההנחות השתנו: עדכן את התחזית השמורה מהיום':'שמור תחזית חדשה מהיום')+'</button>';
   box.innerHTML=h;
-  var cc=$("cmpChart"); if(cc) drawChart(cc,rows.map(function(x,i){ return [Date.parse(x.d),ests[i]]; }),{h:180,color:"#fde68a",cmp:rows.map(function(x){ return x.liq+x.ill; }),label:"תחזית מול מציאות"});
-  var rb=$("cmpReset"); if(rb) rb.addEventListener("click",function(){
-    if(rb.getAttribute("data-sure")!=="1"){ rb.setAttribute("data-sure","1"); rb.textContent="בטוח? התחזית הקודמת וההשוואות יימחקו. לחץ שוב לאישור"; return; }
-    TRK={v:1, base:newBase(), log:[]}; saveTrack(); });
+  var cc=$("cmpChart"); if(cc) drawChart(cc,rows.map(function(x){ return [Date.parse(monthEnd(x.ym)),x.est]; }),{h:180,color:"#fde68a",cmp:rows.map(function(x){ return x.act; }),label:"תחזית מול מציאות לפי חודש"});
+  var rb=$("cmpReset"); rb.addEventListener("click",function(){
+    if(rb.getAttribute("data-sure")!=="1"){ rb.setAttribute("data-sure","1"); rb.textContent="בטוח? החודשים הבאים יחושבו לפי ההנחות של היום. חודשים שכבר נרשמו לא ישתנו. לחץ שוב לאישור"; return; }
+    TRK.base=newBase(); saveTrack(); });
+}
+$("cmp").addEventListener("click",function(e){
+  var b=e.target.closest(".rowedit"); if(!b||!TRK) return;
+  var x=TRK.months.filter(function(r){ return r.ym===b.getAttribute("data-ym"); })[0]; if(!x) return;
+  $("rTitle").textContent=monthHe(x.ym); $("rEst").value=Math.round(x.est).toLocaleString("en-US"); $("rAct").value=Math.round(x.act).toLocaleString("en-US");
+  $("rdlg").setAttribute("data-ym",x.ym); $("rdlg").showModal();
+});
+$("rdf").addEventListener("submit",function(e){
+  var btn=e.submitter; if(btn&&btn.value==="cancel") return;
+  var es=num("rEst"), ac=num("rAct"); if(es==null||ac==null){ e.preventDefault(); return; }
+  var x=TRK.months.filter(function(r){ return r.ym===$("rdlg").getAttribute("data-ym"); })[0]; if(!x) return;
+  x.est=es; x.act=ac; x.manual=true; saveTrack();
+});
+
+/* ---------- where the change came from ----------
+   Splits the change over the chart's period into: new deposits, exchange rates, investment return per fund,
+   and deposit interest. Uses the per-fund weekly series when the pension data has it, otherwise per person. */
+function attrGrid(){
+  var G=PEN&&PEN.growth; if(!G||!G.dates) return null;
+  if(G.funds&&G.fundIdx) return {idx:G.fundIdx, items:G.funds.map(function(f){ return {name:fundName(f), v:f.values, d:f.dep, usd:function(k){ return (+f.values[k]||0)*f.usd; }, eur:function(k){ return (+f.values[k]||0)*f.eur; }}; })};
+  var idx=G.dates.map(function(_,i){ return i; });
+  return {idx:idx, items:G.people.map(function(p){ return {name:"הקרנות של "+p.name, v:p.values, d:p.dep||[], usd:function(k){ return p.usd?+p.usd[k]||0:0; }, eur:function(k){ return p.eur?+p.eur[k]||0:0; }}; })};
+}
+function snapStart(st){ // first grid date at or after st
+  var g=attrGrid(), G=PEN.growth; if(!g) return st;
+  for(var k=0;k<g.idx.length-1;k++){ var t=Date.parse(G.dates[g.idx[k]]); if(t>=st) return t; }
+  return Date.parse(G.dates[g.idx[Math.max(0,g.idx.length-2)]]);
+}
+function drawAttr(st){
+  var sec=$("attr"), g=attrGrid(); if(!g||!CFG||oshIls()==null){ sec.hidden=true; return; }
+  sec.hidden=false;
+  var G=PEN.growth, a=0; while(a<g.idx.length-2&&Date.parse(G.dates[g.idx[a]])<st) a++;
+  var b=g.idx.length-1, dep=0, usd=0, eur=0, funds=[];
+  g.items.forEach(function(f){ var mk=0;
+    for(var k=a+1;k<=b;k++){ var i0=g.idx[k-1], i1=g.idx[k], dv=(+f.v[k]||0)-(+f.v[k-1]||0), dd=(+f.d[k]||0)-(+f.d[k-1]||0);
+      var u=f.usd(k-1)*(G.fx.USD[i1]/G.fx.USD[i0]-1), e=f.eur(k-1)*(G.fx.EUR[i1]/G.fx.EUR[i0]-1);
+      dep+=dd; usd+=u; eur+=e; mk+=dv-dd-u-e; }
+    funds.push([f.name,mk]); });
+  var d0=G.dates[g.idx[a]], d1=G.dates[g.idx[b]], interest=depAtDate(d1)-depAtDate(d0);
+  var market=funds.reduce(function(s,x){ return s+x[1]; },0), total=dep+usd+eur+market+interest;
+  funds=funds.filter(function(x){ return Math.abs(x[1])>=1; }).sort(function(x,y){ return Math.abs(y[1])-Math.abs(x[1]); });
+  var mx=Math.max.apply(null,[dep,usd,eur,market,interest].concat(funds.map(function(x){ return x[1]; })).map(Math.abs).concat([1]));
+  var row=function(label,v,color,sub){ return '<div class="arow'+(sub?" sub":"")+'"><span class="al">'+label+'</span><span class="ab"><i style="width:'+(Math.abs(v)/mx*100).toFixed(1)+'%;background:'+(v<0?"#fb7185":color)+'"></i></span><b class="num '+(v>=0?"up":"down")+'">'+(v>=0?"+":"-")+ils(Math.abs(v))+'</b></div>'; };
+  var h='<div class="chg" style="margin:0 0 10px">מ-'+fmtDate(d0)+' עד היום ההון השתנה ב-<b class="num '+(total>=0?"up":"down")+'">'+(total>=0?"+":"-")+ils(Math.abs(total))+'</b>. ככה זה מתחלק:</div>';
+  h+=row("הפקדות חדשות לפנסיה ולקרנות (כסף שהכנסתם)",dep,"#93c5fd");
+  h+=row("תשואת ההשקעות בקרנות (בלי הפקדות ובלי מטבע)",market,"#6ee7b7");
+  funds.forEach(function(x){ h+=row(x[0],x[1],"#6ee7b7",true); });
+  h+=row("שינוי בשער הדולר",usd,"#fde68a");
+  h+=row("שינוי בשער היורו",eur,"#fdba74");
+  h+=row("ריבית על הפיקדון",interest,"#c4b5fd");
+  h+='<div class="cnote" style="margin-top:10px;line-height:1.6">'+
+     (dep===0?'בנתונים אין הפקדות מתועדות לתקופה הזו (הן נלקחות מהדוחות השנתיים), אז אם היו הפקדות הן נספרות כאן בתוך תשואת ההשקעות. ':'ההפקדות נלקחות מהדוחות השנתיים ומפוזרות שווה על פני השנה; קופה בלי דוח שנתי נספרת כולה כתשואה. ')+
+     'קופה שיש לה דוחות אמיתיים מוצגת לפי היתרות בדוחות. קופה בלי דוח לתקופה מוצגת כהערכה: השווי של היום לפי תנועת המדד של המסלול שלה. '+
+     'העו״ש לא נכלל כי לא נשמרת לו היסטוריה, והפיקדון נספר כקבוע עד היום שבו התחיל ('+fmtDate(depStart())+').</div>';
+  $("attrBody").innerHTML=h;
 }
 
 /* ---------- deposit page ---------- */
+var FY=+(lsGet("hon-dep-y")||5); if(FC_YEARS.indexOf(FY)<0) FY=5;
 function drawDeposit(){
   if($("savings").hidden) return;
   var a=depositAsset(); if(!a||!DATA) return;
-  var amount=+CFG.amount||3700000, start=Date.parse(DATA.periods[period]), end=Date.parse(DATA.asOf), pts=[], n=60;
-  for(var i=0;i<=n;i++){ var t=start+(end-start)*i/n; pts.push([t,depAt(t)]); }
-  var v=depositValue(period), r0=v/amount-1;
-  $("d-chg").innerHTML='<b class="num up">▲ +'+ils(v-amount)+' · '+pctStr(r0)+'</b> ב'+LABEL[period]+' (מאז '+fmtDate(DATA.periods[period])+')';
-  drawChart($("depChart"),pts,{h:200,color:"#6ee7b7",base:amount,label:"צמיחת הפיקדון"});
-  var h='<thead><tr><th>תקופה</th><th>מאז</th><th>שווי היום</th><th>תשואה</th><th>רווח</th></tr></thead><tbody>';
-  ORDER.forEach(function(p){ if(!DATA.periods[p]) return; var x=depositValue(p);
-    h+='<tr class="'+(p===period?"sel":"")+'"><td>'+LABEL[p]+'</td><td class="num">'+fmtDate(DATA.periods[p])+'</td><td class="num">'+ils(x)+'</td><td class="num up">'+pctStr(x/amount-1)+'</td><td class="num up">+'+ils(x-amount)+'</td></tr>'; });
-  $("d-tbl").innerHTML=h+'</tbody>';
+  var amount=depAmount(), r=depRate()/100, now=depNow(), T=todayStr(), t0=Date.parse(T);
+  // forward
+  document.querySelectorAll("#fchips button").forEach(function(b){ b.classList.toggle("on",+b.getAttribute("data-y")===FY); });
+  var pts=[], n=FY*12; for(var i=0;i<=n;i++) pts.push([t0+i/12*365.25*864e5, now*Math.pow(1+r,i/12)]);
+  var endV=now*Math.pow(1+r,FY);
+  $("d-fchg").innerHTML='בעוד '+yLabel(FY)+': <b class="num up">'+ils(endV)+'</b> · <span class="num up">+'+ils(endV-now)+' · '+pctStr(endV/now-1)+'</span>';
+  drawChart($("depF"),pts,{h:200,color:"#6ee7b7",base:now,label:"הפיקדון קדימה"});
+  $("d-ftbl").innerHTML='<thead><tr><th>בעוד</th><th>שווי</th><th>ריבית שתצטבר</th><th>תשואה</th></tr></thead><tbody>'+FC_YEARS.map(function(y){ var x=now*Math.pow(1+r,y);
+    return '<tr class="'+(y===FY?"sel":"")+'"><td>'+yLabel(y)+'</td><td class="num">'+ils(x)+'</td><td class="num up">+'+ils(x-now)+'</td><td class="num up">'+pctStr(x/now-1)+'</td></tr>'; }).join("")+'</tbody>';
+  // backward ("what if")
+  var start=Date.parse(pastDate(period)), end=Date.parse(DATA.asOf), bp=[];
+  for(i=0;i<=60;i++){ var t=start+(end-start)*i/60; bp.push([t,amount*Math.pow(1+r,(t-start)/864e5/365)]); }
+  var v=pastValue(period);
+  $("d-chg").innerHTML='אילו הפקדת '+ils(amount)+' לפני '+LABEL[period]+' ('+fmtDate(pastDate(period))+'), היום היו לך <b class="num up">'+ils(v)+'</b> · <span class="num up">+'+ils(v-amount)+' · '+pctStr(v/amount-1)+'</span>';
+  drawChart($("depChart"),bp,{h:200,color:"#93c5fd",base:amount,label:"הפיקדון אחורה"});
+  $("d-tbl").innerHTML='<thead><tr><th>לפני</th><th>מאז</th><th>שווי היום</th><th>תשואה</th><th>רווח</th></tr></thead><tbody>'+ORDER.filter(pastDate).map(function(p){ var x=pastValue(p);
+    return '<tr class="'+(p===period?"sel":"")+'"><td>'+LABEL[p]+'</td><td class="num">'+fmtDate(pastDate(p))+'</td><td class="num">'+ils(x)+'</td><td class="num up">'+pctStr(x/amount-1)+'</td><td class="num up">+'+ils(x-amount)+'</td></tr>'; }).join("")+'</tbody>';
+  $("chips").innerHTML=ORDER.filter(pastDate).map(function(p){ return '<button type="button" class="chip'+(p===period?" on":"")+'" data-p="'+p+'">'+LABEL[p]+'</button>'; }).join("");
 }
+$("fchips").addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return; FY=+b.getAttribute("data-y"); lsSet("hon-dep-y",String(FY)); drawDeposit(); });
 function saveConfig(next){
   var text=JSON.stringify(next,null,1)+"\n";
   CFG=next; render();
@@ -874,16 +1082,16 @@ function saveConfig(next){
 }
 $("depEdit").addEventListener("click",function(){
   var a=depositAsset(); if(!a) return;
-  $("depAmt").value=Math.round(+CFG.amount||0).toLocaleString("en-US"); $("depRate").value=(+a.rate).toString();
+  $("depAmt").value=Math.round(depAmount()).toLocaleString("en-US"); $("depRate").value=String(depRate()); $("depStartIn").value=depStart();
   $("ddlg").showModal(); setTimeout(function(){ $("depAmt").select(); },50);
 });
 $("ddf").addEventListener("submit",function(e){
   var btn=e.submitter; if(btn&&btn.value==="cancel") return;
-  var amt=parseFloat(String($("depAmt").value).replace(/[,₪\s]/g,"")), rate=parseFloat(String($("depRate").value).replace(",",".").replace("%",""));
+  var amt=num("depAmt"), rate=parseFloat(String($("depRate").value).replace(",",".").replace("%","")), st=$("depStartIn").value;
   if(!(amt>0)){ e.preventDefault(); $("depAmt").focus(); return; }
   if(!isFinite(rate)){ e.preventDefault(); $("depRate").focus(); return; }
   var next=JSON.parse(JSON.stringify(CFG)), a=depositAsset(), t=next.assets.filter(function(x){ return x.id===a.id; })[0];
-  next.amount=amt; t.rate=rate; saveConfig(next);
+  next.amount=amt; t.rate=rate; if(/^\d{4}-\d{2}-\d{2}$/.test(st)) t.start=st; saveConfig(next);
 });
 var rzT; window.addEventListener("resize",function(){ clearTimeout(rzT); rzT=setTimeout(function(){ drawEquity(); drawDeposit(); drawForecast(); },150); });
 
@@ -910,10 +1118,10 @@ function penSplit(){
 var COLORS={sav:"#34d399",osh:"#fbbf24",pen:"#c084fc"};
 function render(){
   if(!KEY) return;
-  var dep=depositValue(period), osh=oshIls(), pen=PEN&&PEN.family?PEN.family.total:null, ps=penSplit();
+  var dep=depNow(), osh=oshIls(), pen=PEN&&PEN.family?PEN.family.total:null, ps=penSplit();
 
   // tiles
-  if(CFG) { $("v-sav").textContent=ils(dep); $("s-sav").textContent=DEPOSIT_NAME+" · "+LABEL[period]; }
+  if(CFG) { $("v-sav").textContent=ils(dep); $("s-sav").textContent=DEPOSIT_NAME+" · "+depRate().toFixed(2)+"%"; }
   if(OSH) { $("v-osh").textContent=osh==null?"…":ils(osh);
     $("b-il").textContent=ils(OSH.il); $("b-us").textContent="$"+Math.round(OSH.us).toLocaleString("en-US"); $("s-osh").textContent=OSH.updatedAt?"עודכן "+fmtDate(new Date(OSH.updatedAt).toLocaleDateString("sv-SE",{timeZone:"Asia/Jerusalem"})):"לחץ לעריכה"; }
   if(PEN) {
@@ -939,7 +1147,7 @@ function render(){
   $("legend").innerHTML=sum?parts.filter(function(p){return p[2];}).map(function(p){ return '<span><i style="background:'+COLORS[p[0]]+'"></i>'+p[1]+' <span class="num">'+(p[2]/sum<0.01?"<1":Math.round(p[2]/sum*100))+'%</span></span>'; }).join(""):"";
 
   var f=[];
-  if(DATA) f.push("פיקדון: לפי דשבורד ההשקעות, תקופה \""+LABEL[period]+"\", נכון ל-"+fmtDate(DATA.asOf));
+  if(CFG) f.push("פיקדון: "+ils(depAmount())+" בריבית "+depRate().toFixed(2)+"% מאז "+fmtDate(depStart()));
   if(PEN) f.push("פנסיה: הערכת שווי מ-"+fmtDate(PEN.today));
   f.push("הוצאות לא נכללות בסה״כ");
   $("foot").textContent=f.join(" · ");
@@ -950,21 +1158,18 @@ function render(){
     var amount=+CFG.amount||3700000;
     $("d-val").textContent=ils(dep);
     var gain=dep-amount;
-    $("d-gain").innerHTML='<span class="num">'+(gain>=0?"+":"")+ils(gain)+'</span> ריבית מאז '+fmtDate(DATA.periods[period])+' ('+LABEL[period]+')';
-    $("d-rate").textContent=(+a.rate).toFixed(2)+"%";
+    $("d-gain").innerHTML='התחיל ב-'+fmtDate(depStart())+' · נצבר עד היום <span class="num">+'+ils(gain)+'</span>';
+    $("d-rate").textContent=depRate().toFixed(2)+"%";
     $("d-amt").textContent=ils(amount);
-    $("d-asof").textContent=fmtDate(DATA.asOf);
-    $("d-note").textContent="הנתון מסונכרן עם דשבורד ההשקעות: אותו סכום, אותה ריבית ואותה תקופה. ריבית דריבית שנתית, לפני מס. שינוי תקופה כאן משנה גם את התקופה בדשבורד ההשקעות במכשיר הזה.";
+    $("d-asof").textContent=fmtDate(depStart());
+    $("d-note").textContent="ריבית דריבית שנתית, לפני מס. הסכום והריבית משותפים עם דשבורד ההשקעות, שם הפיקדון משמש כרף השוואה. בתחזית הכוללת בדף הבית מתווסף גם החסכון החודשי.";
   }
   drawEquity(); drawDeposit(); drawForecast();
-  $("chips").innerHTML=ORDER.filter(function(p){ return DATA&&DATA.periods&&DATA.periods[p]; }).map(function(p){
-    return '<button type="button" class="chip'+(p===period?" on":"")+'" data-p="'+p+'">'+LABEL[p]+'</button>';
-  }).join("");
 }
 function shortIls(v){ if(v==null) return ""; var a=Math.abs(v); if(a>=1e6) return "₪"+(v/1e6).toFixed(2)+"M"; if(a>=1e3) return "₪"+Math.round(v/1e3)+"K"; return ils(v); }
 $("chips").addEventListener("click",function(e){
   var b=e.target.closest(".chip"); if(!b) return;
-  period=b.getAttribute("data-p"); lsSet("period",period); render();
+  period=b.getAttribute("data-p"); lsSet("hon-period",period); drawDeposit();
 });
 
 // keep it fresh when coming back to the tab
