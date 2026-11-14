@@ -213,6 +213,7 @@ function persist(st){ // encrypt and store; resolves to "gh" or "local"
 /* ---------- the dashboard ---------- */
 function boot(embedded){
 var CATS=[
+ {id:"rent",name:"שכירות דירה",c:"--c8"},
  {id:"home",name:"בית ושוטף",c:"--c1"},
  {id:"subs",name:"תקשורת ומנויים",c:"--c2"},
  {id:"phones",name:"טלפונים",c:"--c3"},
@@ -226,6 +227,8 @@ var LSKEY="family-expenses-draft-v1";
 var state=JSON.parse(JSON.stringify(embedded));
 var dirty=false, saving=false, closed={}, query="";
 try{var d=JSON.parse(localStorage.getItem(LSKEY)||"null");if(d&&d.base===(embedded.savedAt||"init")&&d.items){state.items=d.items;dirty=true;}}catch(e){}
+// one-time: add the apartment rent (₪19,000/month); saved once the save button is pressed
+if(!(embedded.seeds&&embedded.seeds.rent)){if(!state.items.some(function(i){return i.cat==="rent";}))state.items.unshift({id:"r1",cat:"rent",name:"שכירות דירה",person:"",amount:19000,freq:1});state.seeds={rent:1};dirty=true;}
 
 function cv(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 function catOf(id){for(var i=0;i<CATS.length;i++)if(CATS[i].id===id)return CATS[i];return CATS[0];}
@@ -399,7 +402,7 @@ function updateBar(){if(bar)bar.classList.toggle("show",dirty||saving);}
 function save(){
   if(saving)return;
   saving=true;barBtn.disabled=true;barMsg.textContent="שומר…";
-  var st={v:1,savedAt:new Date().toISOString(),items:state.items.filter(function(i){return i.name.trim()||+i.amount>0;})};
+  var st={v:1,savedAt:new Date().toISOString(),seeds:state.seeds||embedded.seeds||{},items:state.items.filter(function(i){return i.name.trim()||+i.amount>0;})};
   persist(st).then(function(where){
     embedded=JSON.parse(JSON.stringify(st));
     try{localStorage.removeItem(LSKEY);}catch(e){}
