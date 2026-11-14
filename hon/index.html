@@ -173,7 +173,7 @@ button{font:inherit;cursor:pointer}
 .cmp3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
 @media (max-width:600px){.cmp3{grid-template-columns:1fr}}
 #cmp .ptbl{font-size:11.5px;border-spacing:0 5px}
-#cmp .ptbl td,#cmp .ptbl th{white-space:nowrap;padding:8px 4px}
+#cmp .ptbl td,#cmp .ptbl th{white-space:nowrap;padding:8px 3px}
 #cmp .ptbl b{direction:ltr;unicode-bidi:isolate;display:inline-block}
 .cmp3 .v{font-size:clamp(17px,4.6vw,22px);white-space:nowrap}
 .fcards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px}
@@ -195,7 +195,7 @@ button{font:inherit;cursor:pointer}
 .arow .ab i{display:block;height:100%;border-radius:99px}
 .arow b{white-space:nowrap}
 @media (max-width:600px){.arow{grid-template-columns:minmax(0,1fr) auto}.arow .ab{display:none}}
-.rowedit{border:0;background:#ffffff22;color:#fff;border-radius:10px;width:40px;height:40px;font-size:16px}
+.rowedit{border:0;background:#ffffff22;color:#fff;border-radius:10px;min-height:32px;padding:4px 10px;font-size:12px;margin-top:4px}
 .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
 .links a{flex:1 1 200px;min-height:48px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px 14px;border-radius:16px;background:#ffffff14;border:1px solid #ffffff2a;color:#fff;text-decoration:none;font-size:14.5px;font-weight:600}
 .links a:hover{background:#ffffff26}
@@ -998,11 +998,10 @@ function drawCompare(){
   // real change: each month against the real amount of the month before (the first one against the day the forecast was saved)
   var base0=B.s.dep+B.s.osh+B.s.penL+B.s.penI, prevOf=function(i){ return i>0?rows[i-1].act:base0; };
   var chgHtml=function(a,prev){ var g=a-prev, c=g>=0?"up":"down"; return '<div class="num '+c+'" style="font-weight:600;margin-top:2px">'+(g>=0?"▲ +":"▼ -")+ils(Math.abs(g))+'<br>'+pctStr(prev?g/prev:0)+'</div>'; };
-  var h='<div style="overflow-x:auto"><table class="ptbl"><thead><tr><th>חודש</th><th>הערכנו</th><th>בפועל<br>ושינוי מחודש קודם</th><th>פער<br>מההערכה</th><th></th></tr></thead><tbody>';
-  h+='<tr class="sel"><td>'+monthHe(curYm)+'<br><span style="font-weight:400">עד היום</span></td><td class="num">'+ils(est.total)+'</td><td class="num">'+ils(act.total)+chgHtml(act.total,prevOf(rows.length))+'</td><td>'+gapHtml(act.total,est.total)+'</td><td></td></tr>';
+  var h='<div style="overflow-x:auto"><table class="ptbl"><thead><tr><th>חודש</th><th>הערכנו</th><th>בפועל<br>ושינוי מחודש קודם</th><th>פער<br>מההערכה</th></tr></thead><tbody>';
+  h+='<tr class="sel"><td>'+monthHe(curYm)+'<br><span style="font-weight:400">עד היום</span></td><td class="num">'+ils(est.total)+'</td><td class="num">'+ils(act.total)+chgHtml(act.total,prevOf(rows.length))+'</td><td>'+gapHtml(act.total,est.total)+'</td></tr>';
   rows.map(function(x,i){ return [x,i]; }).reverse().forEach(function(xi){ var x=xi[0];
-    h+='<tr><td>'+monthHe(x.ym)+(x.manual?'<br><span style="font-weight:400">נערך ידנית</span>':'')+'</td><td class="num">'+ils(x.est)+'</td><td class="num">'+ils(x.act)+chgHtml(x.act,prevOf(xi[1]))+'</td><td>'+gapHtml(x.act,x.est)+'</td>'+
-       '<td><button type="button" class="rowedit" data-ym="'+x.ym+'" aria-label="עריכת '+monthHe(x.ym)+'">✎</button></td></tr>'; });
+    h+='<tr><td>'+monthHe(x.ym)+(x.manual?'<br><span style="font-weight:400">נערך ידנית</span>':'')+'<br><button type="button" class="rowedit" data-ym="'+x.ym+'" aria-label="עריכת '+monthHe(x.ym)+'">✎ תיקון</button></td><td class="num">'+ils(x.est)+'</td><td class="num">'+ils(x.act)+chgHtml(x.act,prevOf(xi[1]))+'</td><td>'+gapHtml(x.act,x.est)+'</td></tr>'; });
   h+='</tbody></table></div>';
   if(rows.length>=2) h+='<div class="fleg" style="margin:14px 0 30px"><span><i style="background:#fde68a"></i>הערכנו</span><span><i style="background:#fff"></i>בפועל</span></div><div class="chart" id="cmpChart"></div>';
   var changed=JSON.stringify(fcParams())!==JSON.stringify(B.p);
