@@ -995,16 +995,20 @@ function drawCompare(){
   rows.sort(function(x,y){ return x.ym<y.ym?-1:1; });
   if(dirty) saveTrackSoon();
   var act=actualNow(), est=forecastAt(B,T), curYm=T.slice(0,7);
-  var h='<div style="overflow-x:auto"><table class="ptbl"><thead><tr><th>חודש</th><th>הערכנו</th><th>בפועל</th><th>פער</th><th></th></tr></thead><tbody>';
-  h+='<tr class="sel"><td>'+monthHe(curYm)+'<br><span style="font-weight:400">עד היום</span></td><td class="num">'+ils(est.total)+'</td><td class="num">'+ils(act.total)+'</td><td>'+gapHtml(act.total,est.total)+'</td><td></td></tr>';
-  rows.slice().reverse().forEach(function(x){
-    h+='<tr><td>'+monthHe(x.ym)+(x.manual?'<br><span style="font-weight:400">נערך ידנית</span>':'')+'</td><td class="num">'+ils(x.est)+'</td><td class="num">'+ils(x.act)+'</td><td>'+gapHtml(x.act,x.est)+'</td>'+
+  // real change: each month against the real amount of the month before (the first one against the day the forecast was saved)
+  var base0=B.s.dep+B.s.osh+B.s.penL+B.s.penI, prevOf=function(i){ return i>0?rows[i-1].act:base0; };
+  var chgHtml=function(a,prev){ var g=a-prev, c=g>=0?"up":"down"; return '<div class="num '+c+'" style="font-weight:600;margin-top:2px">'+(g>=0?"▲ +":"▼ -")+ils(Math.abs(g))+'<br>'+pctStr(prev?g/prev:0)+'</div>'; };
+  var h='<div style="overflow-x:auto"><table class="ptbl"><thead><tr><th>חודש</th><th>הערכנו</th><th>בפועל<br>ושינוי מחודש קודם</th><th>פער<br>מההערכה</th><th></th></tr></thead><tbody>';
+  h+='<tr class="sel"><td>'+monthHe(curYm)+'<br><span style="font-weight:400">עד היום</span></td><td class="num">'+ils(est.total)+'</td><td class="num">'+ils(act.total)+chgHtml(act.total,prevOf(rows.length))+'</td><td>'+gapHtml(act.total,est.total)+'</td><td></td></tr>';
+  rows.map(function(x,i){ return [x,i]; }).reverse().forEach(function(xi){ var x=xi[0];
+    h+='<tr><td>'+monthHe(x.ym)+(x.manual?'<br><span style="font-weight:400">נערך ידנית</span>':'')+'</td><td class="num">'+ils(x.est)+'</td><td class="num">'+ils(x.act)+chgHtml(x.act,prevOf(xi[1]))+'</td><td>'+gapHtml(x.act,x.est)+'</td>'+
        '<td><button type="button" class="rowedit" data-ym="'+x.ym+'" aria-label="עריכת '+monthHe(x.ym)+'">✎</button></td></tr>'; });
   h+='</tbody></table></div>';
   if(rows.length>=2) h+='<div class="fleg" style="margin:14px 0 30px"><span><i style="background:#fde68a"></i>הערכנו</span><span><i style="background:#fff"></i>בפועל</span></div><div class="chart" id="cmpChart"></div>';
   var changed=JSON.stringify(fcParams())!==JSON.stringify(B.p);
   h+='<div class="cnote" style="margin-top:10px;line-height:1.6">'+
      (rows.length?'':'בסוף '+monthHe(curYm)+' תתווסף כאן השורה הראשונה: כמה הערכנו לסוף החודש, כמה יצא בפועל ומה הפער. ')+
+     'מתחת לסכום בפועל מופיע כמה ההון עלה או ירד באמת לעומת החודש הקודם, בשקלים ובאחוזים (בחודש הראשון: לעומת היום שבו נשמרה התחזית, '+fmtDate(B.date)+'). '+
      'כל חודש שמסתיים מקבל שורה משלו, והיא לא משתנה אחר כך גם אם תעדכן את החסכון או את העו״ש. אפשר לתקן שורה ידנית בכפתור ✎. השורה נוספת בכניסה הראשונה שלך אחרי סוף החודש, לפי שווי הפנסיה ביום האחרון של אותו חודש והעו״ש שרשום באותה כניסה. '+
      'ההערכות מבוססות על התחזית שנשמרה ב-'+fmtDate(B.date)+': ריבית נטו '+(+B.p.rate).toFixed(2)+'%, חסכון '+ils(B.p.save)+' בחודש החל מ'+monthHe(B.p.saveStart)+', תשואת פנסיה '+B.p.pen+'%, הפקדות '+ils(B.p.depA)+' בחודש (לוטם) ו-'+ils(B.p.depB)+' (שחר, מאותו חודש). '+
      (TRK_WHERE==="gh"?'נשמר לכל המכשירים.':'נשמר רק במכשיר הזה; כדי שיישמר לכל המכשירים צריך לחבר GitHub (כפתור הסנכרון בראש הדף).')+'</div>'+
