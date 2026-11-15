@@ -377,6 +377,8 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
     <input class="inp num" id="depRate" inputmode="decimal" autocomplete="off" style="border-color:#a7f3d0">
     <label class="bl" for="depStartIn">תאריך תחילת הפיקדון</label>
     <input class="inp num" id="depStartIn" type="date" style="border-color:#a7f3d0;font-size:18px">
+    <label class="bl" for="depUntilIn">הריבית מובטחת עד</label>
+    <input class="inp num" id="depUntilIn" type="date" style="border-color:#a7f3d0;font-size:18px">
     <p class="dlgnote">שים לב: בדשבורד ההשקעות אותו סכום משמש להשוואה של כל האפיקים (כל מניה מחושבת על אותו סכום).</p>
     <div class="acts"><button class="ok" value="ok" style="background:linear-gradient(90deg,#10b981,#0ea5e9)">שמור</button><button class="no" value="cancel" formnovalidate>ביטול</button></div>
   </form>
@@ -591,6 +593,7 @@ function depRate(){ var a=depositAsset(); return a?(+a.rate||0):0; }
 var TAX=0.15; // tax on the interest of a shekel deposit
 function depNet(){ return Math.round(depRate()*(1-TAX)*10000)/10000; }
 function rateTxt(){ return depRate().toFixed(2)+"% ברוטו · "+depNet().toFixed(2)+"% נטו"; }
+function depUntil(){ var a=depositAsset(); return a&&/^\d{4}-\d{2}-\d{2}$/.test(a.until||"")?a.until:""; }
 function depStart(){ var a=depositAsset(); return a&&/^\d{4}-\d{2}-\d{2}$/.test(a.start||"")?a.start:todayStr(); }
 // The real deposit: the amount until the day it started, then compound interest at its yearly rate.
 function depAtDate(d){ return depositAsset()?depAmount()*Math.pow(1+depNet()/100,Math.max(0,days(depStart(),d))/365):null; }
@@ -638,6 +641,9 @@ function loadOsh(){
     vals=vals.map(norm).filter(Boolean);
     vals.sort(function(a,b){ return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
     OSH=vals[0]||{il:OSH_DEFAULT.il,us:OSH_DEFAULT.us,updatedAt:null};
+    // a balance update that was sent through the private data file: applied once, if it is newer than what is saved
+    var o=PEN&&PEN.portal&&PEN.portal.osh;
+    if(o&&String(o.updatedAt)>String(OSH.updatedAt||"")){ if(isFinite(+o.il)) OSH.il=+o.il; if(isFinite(+o.us)) OSH.us=+o.us; saveOsh(OSH.il,OSH.us); }
   });
 }
 function saveOsh(il,us){
@@ -904,7 +910,7 @@ function drawForecast(){
       '<div class="fl"><span><i style="background:#34d399"></i>נזיל</span><b class="num">'+shortIls(x.liq)+'</b></div><div class="fl"><span><i style="background:#c084fc"></i>לא נזיל</span><b class="num">'+shortIls(x.ill)+'</b></div></div>'; }).join("");
   $("fcDepInfo").innerHTML=depInfoHtml();
   var h=FC.hist;
-  $("fcNote").textContent="ההנחות: פיקדון של "+ils(S.dep)+" בריבית "+P.rate.toFixed(2)+"% נטו בשנה, אחרי 15% מס על הריבית (משנים בדף החסכון). חסכון של "+ils(FC.save)+" בחודש החל מ"+monthHe(FC.saveStart)+", שמצטרף לפיקדון באותה ריבית נטו. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
+  $("fcNote").textContent="ההנחות: פיקדון של "+ils(S.dep)+" בריבית "+P.rate.toFixed(2)+"% נטו בשנה, אחרי 15% מס על הריבית (משנים בדף החסכון)"+(depUntil()?"; הריבית מובטחת עד "+fmtDate(depUntil())+" והתחזית מניחה שהיא נמשכת גם אחר כך":"")+". חסכון של "+ils(FC.save)+" בחודש החל מ"+monthHe(FC.saveStart)+", שמצטרף לפיקדון באותה ריבית נטו. פנסיה וקרנות בתשואה של "+FC.pen+"% בשנה"+
     (h.years>0.5?" (התשואה השנתית הממוצעת שלנו ב-"+h.years.toFixed(1)+" השנים האחרונות, בלי הפקדות, הייתה "+h.ret+"%)":"")+
     ", ועוד הפקדות של "+ils(FC.depA)+" בחודש (לוטם) ושל "+ils(FC.depB)+" בחודש (שחר, מ"+monthHe(FC.saveStart)+"). הפנסיה והקרנות מוצגות ברוטו, לפני מס ודמי ניהול. עו״ש נשאר כמו היום. הון נזיל: הפיקדון, החסכון החודשי, העו״ש וקרנות ההשתלמות שכבר פתוחות. הון לא נזיל: הפנסיה, הקופות שעוד סגורות וכל ההפקדות החדשות (קופה שתיפתח בעתיד נשארת בתחזית בצד הלא נזיל). הרצועה מסביב לקו מראה מה קורה אם תשואת הפנסיה גבוהה או נמוכה ב-"+FC_BAND+" נקודות אחוז. הסכומים נומינליים, וזו הערכה בלבד: תשואות העבר לא מבטיחות את העתיד.";
   drawCompare();
@@ -1103,7 +1109,7 @@ function saveConfig(next){
 }
 $("depEdit").addEventListener("click",function(){
   var a=depositAsset(); if(!a) return;
-  $("depAmt").value=Math.round(depAmount()).toLocaleString("en-US"); $("depRate").value=String(depRate()); $("depStartIn").value=depStart();
+  $("depAmt").value=Math.round(depAmount()).toLocaleString("en-US"); $("depRate").value=String(depRate()); $("depStartIn").value=depStart(); $("depUntilIn").value=depUntil();
   $("ddlg").showModal(); setTimeout(function(){ $("depAmt").select(); },50);
 });
 $("ddf").addEventListener("submit",function(e){
@@ -1112,7 +1118,8 @@ $("ddf").addEventListener("submit",function(e){
   if(!(amt>0)){ e.preventDefault(); $("depAmt").focus(); return; }
   if(!isFinite(rate)){ e.preventDefault(); $("depRate").focus(); return; }
   var next=JSON.parse(JSON.stringify(CFG)), a=depositAsset(), t=next.assets.filter(function(x){ return x.id===a.id; })[0];
-  next.amount=amt; t.rate=rate; if(/^\d{4}-\d{2}-\d{2}$/.test(st)) t.start=st; saveConfig(next);
+  next.amount=amt; t.rate=rate; if(/^\d{4}-\d{2}-\d{2}$/.test(st)) t.start=st;
+  var un=$("depUntilIn").value; if(/^\d{4}-\d{2}-\d{2}$/.test(un)) t.until=un; else delete t.until; saveConfig(next);
 });
 var rzT; window.addEventListener("resize",function(){ clearTimeout(rzT); rzT=setTimeout(function(){ drawEquity(); drawDeposit(); drawForecast(); },150); });
 
@@ -1180,11 +1187,11 @@ function render(){
     var amount=+CFG.amount||3700000;
     $("d-val").textContent=ils(dep);
     var gain=dep-amount;
-    $("d-gain").innerHTML=(depStart()>todayStr()?'מתחיל ב-':'התחיל ב-')+fmtDate(depStart())+' · נצבר עד היום נטו <span class="num">+'+ils(gain)+'</span>';
+    $("d-gain").innerHTML=(depStart()>todayStr()?'מתחיל ב-':'התחיל ב-')+fmtDate(depStart())+' · נצבר עד היום נטו <span class="num">+'+ils(gain)+'</span>'+(depUntil()?'<br>הריבית מובטחת עד '+fmtDate(depUntil()):'');
     $("d-rate").innerHTML=depNet().toFixed(2)+'% נטו<div class="k">'+depRate().toFixed(2)+'% ברוטו, פחות 15% מס על הריבית</div>';
     $("d-amt").textContent=ils(amount);
     $("d-asof").textContent=fmtDate(depStart());
-    $("d-note").textContent="כל המספרים נטו: ריבית דריבית שנתית אחרי 15% מס על הריבית. הסכום והריבית משותפים עם דשבורד ההשקעות, שם הפיקדון משמש כרף השוואה. בתחזית הכוללת בדף הבית מתווסף גם החסכון החודשי.";
+    $("d-note").textContent=(depUntil()?"הריבית מובטחת עד "+fmtDate(depUntil())+". הגרף והטבלה מניחים שהיא נמשכת באותו שיעור גם אחר כך; כשתיסגר ריבית חדשה, עדכן אותה ב\"עריכה\". ":"")+"כל המספרים נטו: ריבית דריבית שנתית אחרי 15% מס על הריבית. הסכום והריבית משותפים עם דשבורד ההשקעות, שם הפיקדון משמש כרף השוואה. בתחזית הכוללת בדף הבית מתווסף גם החסכון החודשי.";
   }
   drawEquity(); drawDeposit(); drawForecast();
 }
