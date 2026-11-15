@@ -101,7 +101,9 @@ function value(a,p){
   if(a.type==="portfolio"){ var vs=members().map(function(m){return value(m,p);}).filter(function(v){return v!=null;}); if(!vs.length) return null; return vs.reduce(function(x,y){return x+y;},0)/vs.length; }
   if(a.type==="deposit"){
     // A deposit with a start date is the real one: the amount until it starts, then interest net of 15% tax.
-    if(a.start) return S.amount*Math.pow(1+(+a.rate||0)*0.85/100,Math.max(0,days(a.start,S.asOf))/365);
+    if(a.start){ // until the guaranteed period ends: its rate; afterwards: the estimated rate (rateAfter), both net of tax
+      var t=Math.max(0,days(a.start,S.asOf)), t1=a.until?Math.min(t,Math.max(0,days(a.start,a.until))):t, r2=a.rateAfter!=null?+a.rateAfter:(+a.rate||0);
+      return S.amount*Math.pow(1+(+a.rate||0)*0.85/100,t1/365)*Math.pow(1+r2*0.85/100,(t-t1)/365); }
     var d=days(S.periods[p],S.asOf); return S.amount*Math.pow(1+(+a.rate||0)/100,d/365); }
   var p0=a.prices&&+a.prices[p], p1=a.prices&&+a.prices.now;
   if(!p0||!p1) return null;
