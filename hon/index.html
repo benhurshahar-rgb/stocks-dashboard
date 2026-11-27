@@ -296,11 +296,11 @@ dialog p{margin:0 0 14px;color:var(--mut);font-size:14px}
       <span class="s" id="s-pen">שחר ולוטם</span>
     </button>
 
-    <a class="tile exp" id="t-exp" href="expenses/" style="text-decoration:none">
+    <a class="tile exp" id="t-exp" href="https://claude.ai/artifact/KjdtU12DXeTkDVRq33qYRk" target="_blank" rel="noopener" style="text-decoration:none">
       <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></span>
       <span class="t">הוצאות חודשיות קבועות</span>
       <span class="a num" id="v-exp">—</span>
-      <span class="s">בחודש · לא נכלל בסה״כ</span>
+      <span class="s" id="s-exp">בחודש · לא נכלל בסה״כ</span>
     </a>
   </section>
 
@@ -693,20 +693,13 @@ $("df").addEventListener("submit",function(e){
 
 /* ---------- expenses (shown only, never added to any total) ----------
    Read from the expenses dashboard's own encrypted file, so the tile always shows its current monthly total. */
-var EXP_TOTAL=null;
+var EXP_TOTAL=null, EXP_AT=null;
 function loadExp(){
-  var path="hon/expenses.enc.json", local=null; try{ local=JSON.parse(lsGet("hon-exp-local")||"null"); }catch(e){}
-  var remote=token()
-    ? gh("/contents/"+path+"?ref=main").then(function(r){ return r.ok?r.json().then(function(j){ return JSON.parse(unb64utf(j.content)); }):null; })
-    : fetch("https://raw.githubusercontent.com/"+OWNER+"/"+REPO+"/main/"+path+"?t="+Date.now(),{cache:"no-store"}).then(function(r){ return r.ok?r.json():null; });
-  return remote.catch(function(){ return null; }).then(function(enc){
-    return Promise.all([enc,local].map(function(e){ return e?decrypt(KEY,e).catch(function(){ return null; }):null; }));
-  }).then(function(vals){
-    var c=vals.concat([PEN.portal&&PEN.portal.expenses]).filter(function(v){ return v&&v.items; });
-    c.sort(function(a,b){ return String(b.savedAt).localeCompare(String(a.savedAt)); });
-    if(c[0]) EXP_TOTAL=c[0].items.reduce(function(s,it){ return s+(+it.amount||0)/(+it.freq||1); },0);
-    else if(PEN.portal&&isFinite(+PEN.portal.expensesMonthly)) EXP_TOTAL=+PEN.portal.expensesMonthly;
-  });
+  // The expenses dashboard lives on claude.ai; its latest saved list reaches the portal through the private data file.
+  var e=PEN&&PEN.portal&&PEN.portal.expenses;
+  if(e&&e.items){ EXP_TOTAL=e.items.reduce(function(s,it){ return s+(+it.amount||0)/(+it.freq||1); },0); EXP_AT=e.savedAt||null; }
+  else if(PEN&&PEN.portal&&isFinite(+PEN.portal.expensesMonthly)) EXP_TOTAL=+PEN.portal.expensesMonthly;
+  return Promise.resolve();
 }
 
 /* ---------- pension ---------- */
@@ -1169,6 +1162,7 @@ function render(){
   }
 
   $("v-exp").textContent=EXP_TOTAL==null?"—":ils(EXP_TOTAL);
+  $("s-exp").textContent="בחודש"+(EXP_AT?" · נכון ל-"+fmtDate(new Date(EXP_AT).toLocaleDateString("sv-SE",{timeZone:"Asia/Jerusalem"})):"")+" · לא נכלל בסה״כ";
   // liquid / not liquid
   if(CFG&&OSH&&ps&&osh!=null){
     $("liq").textContent=ils((dep||0)+(osh||0)+ps.liq);
